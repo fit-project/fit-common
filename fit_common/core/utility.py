@@ -50,6 +50,23 @@ def get_platform():
     return platforms[sys.platform]
 
 
+def is_admin():
+    is_admin = False
+    try:
+        is_admin = os.getuid() == 0
+    except AttributeError:
+        if get_platform() == "win":
+            import windows_tools.users as users
+
+            is_admin = users.is_user_local_admin(os.getlogin())
+
+    return is_admin
+
+def is_npcap_installed():
+    # reference https://npcap.com/guide/npcap-devguide.html section (Install-time detection)
+    return os.path.exists("C:\\Program Files\\Npcap\\NPFInstall.exe")
+
+
 def resolve_path(path):
     if getattr(sys, "frozen", False):
         # If the 'frozen' flag is set, we are in bundled-app mode!
