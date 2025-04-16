@@ -240,11 +240,7 @@ def is_cmd(name):
 
 
 def get_version():
-    parser = ConfigParser()
-    parser.read(resolve_path("assets/config.ini"))
-    version = parser.get("fit_properties", "tag_name")
-
-    return version
+    return "v0.0.0"
 
 
 def get_logo():
