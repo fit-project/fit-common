@@ -260,10 +260,20 @@ def get_version():
     return "v0.0.0"
 
 
-def get_logo():
-    logo_path = resolve_path(os.path.join("assets", "branding", "FIT-640.png"))
+def resolve_db_path(path):
+    if getattr(sys, "frozen", False):
+        if sys.platform == "win32":
+            local_path = os.path.join(os.path.expanduser("~"), "AppData", "Local")
+        elif sys.platform == "darwin":
+            local_path = os.path.expanduser("~/Library/Application Support")
+        else:
+            local_path = os.path.expanduser("~/.local/share")
 
-    return logo_path
+        resolve_db_path = os.path.join(local_path, path)
+    else:
+        resolve_db_path = os.path.abspath(os.path.join(os.getcwd(), path))
+
+    return resolve_db_path
 
 
 # search for the first free port to bind the proxy
