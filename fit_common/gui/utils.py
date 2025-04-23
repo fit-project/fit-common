@@ -25,10 +25,16 @@ class VerificationTypes(Enum):
 
 
 class Status(Enum):
-    PENDING = auto()
-    FAIL = auto()
-    SUCCESS = auto()
-    UNKNOW = auto()
+    PENDING = "Pending"
+    FAIL = "Fail"
+    SUCCESS = "Success"
+    UNKNOW = "Unknow"
+
+class State(Enum):
+    INITIALIZATED = "initializated"
+    STARTED = "Started"
+    COMPLETED = "Completed"
+    STOPPED = "Stopped"
 
 
 
