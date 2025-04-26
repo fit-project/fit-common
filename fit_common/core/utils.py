@@ -24,7 +24,7 @@ from configparser import ConfigParser
 from whois import NICClient, extract_domain, IPV4_OR_V6
 import socket
 
-import ssl
+
 import logging
 
 logging.getLogger("scapy").setLevel(logging.CRITICAL)
@@ -159,54 +159,6 @@ def traceroute(url, filename):
                 for snd, rcv in ans:
                     print(snd.ttl, rcv.src, isinstance(rcv.payload, scapy.TCP))
 
-
-
-def check_if_peer_certificate_exist(url):
-    __url = urlparse(url)
-    if not __url.netloc:
-        return False
-    with requests.get(url, stream=True, timeout=10, verify=False) as response:
-        try:
-            response.raw.connection.sock.getpeercert()
-            return True
-        except Exception as e:
-            return False
-
-
-def get_peer_PEM_cert(url, port=443, timeout=10):
-    url = urlparse(url)
-    netloc = url.netloc
-
-    if not netloc:
-        return None
-    else:
-        if ":" in netloc:
-            netloc, port = netloc.split(":")
-
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-        conn = socket.create_connection((netloc, port))
-        sock = context.wrap_socket(conn, server_hostname=netloc)
-        sock.settimeout(timeout)
-
-        try:
-            der_cert = sock.getpeercert(True)
-        finally:
-            sock.close()
-
-        return ssl.DER_cert_to_PEM_cert(der_cert)
-
-
-def save_PEM_cert_to_CER_cert(filename, certificate):
-    try:
-        with open(filename, "w+") as cer_file:
-            if sys.version_info[0] >= 3:
-                cer_file.write(certificate)
-            else:
-                cer_file.write(certificate)
-    except IOError:
-        print("Exception:  {0}".format(IOError.strerror))
 
 
 def import_modules(start_path, start_module_name=""):
