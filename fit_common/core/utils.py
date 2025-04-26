@@ -25,15 +25,6 @@ from whois import NICClient, extract_domain, IPV4_OR_V6
 import socket
 
 
-import logging
-
-logging.getLogger("scapy").setLevel(logging.CRITICAL)
-import scapy.all as scapy
-
-from contextlib import redirect_stdout
-
-
-
 def get_platform():
     platforms = {
         "linux": "lin",
@@ -138,26 +129,6 @@ def whois(url, flags=0):
     nic_client = NICClient()
 
     return nic_client.whois_lookup(None, domain.encode("idna"), flags)
-
-
-def traceroute(url, filename):
-    url = urlparse(url)
-    netloc = url.netloc
-
-    if not netloc:
-        print("Don't find Network location part in the URL")
-    else:
-        netloc = netloc.split(":")[0]
-
-        with open(filename, "w") as f:
-            with redirect_stdout(f):
-                ans, unans = scapy.sr(
-                    scapy.IP(dst=netloc, ttl=(1, 22), id=scapy.RandShort())
-                    / scapy.TCP(flags=0x2),
-                    timeout=10,
-                )
-                for snd, rcv in ans:
-                    print(snd.ttl, rcv.src, isinstance(rcv.payload, scapy.TCP))
 
 
 
