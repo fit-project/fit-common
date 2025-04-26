@@ -132,25 +132,6 @@ def whois(url, flags=0):
 
 
 
-def import_modules(start_path, start_module_name=""):
-    py_files = []
-    exclude = set(["test"])
-    for root, dirs, files in os.walk(start_path):
-        dirs[:] = [d for d in dirs if d not in exclude]
-        for file in files:
-            if file.endswith(".py") and not file.endswith("__.py"):
-                py_files.append(os.path.join(start_path, root, file))
-
-    for py_file in py_files:
-        module_name = (
-            start_module_name + "." + os.path.split(py_file)[-1].rsplit(".", 1)[0]
-        )
-        spec = util.spec_from_file_location(module_name, py_file)
-        module = util.module_from_spec(spec)
-        sys.modules[module_name] = module
-        spec.loader.exec_module(module)
-
-
 def is_cmd(name):
     return distutils.spawn.find_executable(name) is not None
 
