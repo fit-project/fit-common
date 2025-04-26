@@ -7,7 +7,7 @@
 # -----
 ######
 
-from importlib import util
+
 import distutils.spawn
 from distutils.version import StrictVersion
 import os
@@ -17,11 +17,9 @@ import ntplib
 import re
 
 import requests
-from urllib.parse import urlparse
 from datetime import datetime, timezone
 from configparser import ConfigParser
 
-from whois import NICClient, extract_domain, IPV4_OR_V6
 import socket
 
 
@@ -110,25 +108,6 @@ def get_ntp_date_and_time(server):
         return exception
 
     return datetime.fromtimestamp(response.tx_time, timezone.utc)
-
-
-def whois(url, flags=0):
-    ip_match = IPV4_OR_V6.match(url)
-    if ip_match:
-        domain = url
-        try:
-            result = socket.gethostbyaddr(url)
-        except socket.herror as e:
-            return e.strerror
-        else:
-            domain = extract_domain(result[0])
-    else:
-        domain = extract_domain(url)
-
-    # try builtin client
-    nic_client = NICClient()
-
-    return nic_client.whois_lookup(None, domain.encode("idna"), flags)
 
 
 
