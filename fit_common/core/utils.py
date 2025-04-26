@@ -32,7 +32,6 @@ import scapy.all as scapy
 
 from contextlib import redirect_stdout
 
-from nslookup import Nslookup
 
 
 def get_platform():
@@ -139,22 +138,6 @@ def whois(url, flags=0):
     nic_client = NICClient()
 
     return nic_client.whois_lookup(None, domain.encode("idna"), flags)
-
-
-def nslookup(url, dns_server, enable_verbose_mode, enable_tcp):
-    url = urlparse(url)
-    netloc = url.netloc
-
-    if not netloc:
-        return "Don't find Network location part in the URL"
-    else:
-        netloc = netloc.split(":")[0]
-        dns_query = Nslookup(
-            dns_servers=[dns_server], verbose=enable_verbose_mode, tcp=enable_tcp
-        )
-        ips_record = dns_query.dns_lookup(netloc)
-
-        return "\n".join(map(str, ips_record.response_full))
 
 
 def traceroute(url, filename):
