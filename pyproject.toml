@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fit-common"
-version = "0.1.4"
+version = "0.1.5"
 description = "Shared code between modules of the FIT project"
 authors = ["Fit Project <info@fit-project.org>"]
 

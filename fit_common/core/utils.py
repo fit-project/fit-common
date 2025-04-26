@@ -177,13 +177,6 @@ def traceroute(url, filename):
                     print(snd.ttl, rcv.src, isinstance(rcv.payload, scapy.TCP))
 
 
-def get_headers_information(url):
-    __url = urlparse(url)
-    if not __url.netloc:
-        return "Don't find Network location part in the URL"
-    response = requests.get(url, verify=False)
-    return response.headers
-
 
 def check_if_peer_certificate_exist(url):
     __url = urlparse(url)
