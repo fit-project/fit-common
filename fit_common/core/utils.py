@@ -12,7 +12,6 @@ import distutils.spawn
 from distutils.version import StrictVersion
 import os
 import sys
-import hashlib
 import ntplib
 import re
 
@@ -88,15 +87,6 @@ def has_new_portable_version():
             return False
         except Exception as e:
             raise Exception(e)
-
-
-def calculate_hash(filename, algorithm):
-    with open(filename, "rb") as f:
-        file_hash = hashlib.new(algorithm)
-        while chunk := f.read(8192):
-            file_hash.update(chunk)
-
-        return file_hash.hexdigest()
 
 
 def get_ntp_date_and_time(server):
