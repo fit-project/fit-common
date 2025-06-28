@@ -26,9 +26,9 @@ class VerificationTypes(Enum):
 
 class Status(Enum):
     PENDING = "Pending"
-    FAIL = "Fail"
+    FAILURE = "Failure"
     SUCCESS = "Success"
-    UNKNOW = "Unknow"
+    UNKNOWN = "Unknown"
 
 class State(Enum):
     INITIALIZATED = "initializated"
