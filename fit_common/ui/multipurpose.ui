@@ -410,7 +410,7 @@ QProgressBar::chunk
              <string/>
             </property>
             <property name="pixmap">
-             <pixmap>../images/logo-42x42.png</pixmap>
+             <pixmap resource="resources.qrc">:/images/images/logo-42x42.png</pixmap>
             </property>
            </widget>
           </item>
@@ -512,6 +512,8 @@ QProgressBar::chunk
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
