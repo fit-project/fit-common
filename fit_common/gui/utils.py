@@ -36,12 +36,11 @@ class State(Enum):
     COMPLETED = "Completed"
     STOPPED = "Stopped"
 
-
-
+translations = load_translations()
 
 def show_finish_verification_dialog(path, verification_type):
 
-    translations = load_translations()
+    
 
     title = translations["VERIFICATION_COMPLETED"]
     msg = translations["VERIFY_PEC_SUCCESS_MSG"]
@@ -107,3 +106,31 @@ def add_label_in_verification_status_list(
     item.setSizeHint(label.sizeHint())
     status_list.addItem(item)
     status_list.setItemWidget(item, label)
+
+
+def show_finish_acquisition_dialog(acquisition_directory):
+
+    dialog = Dialog(
+        translations["ACQUISITION_FINISHED_TITLE"],
+        translations["ACQUISITION_FINISHED_MSG"],
+    )
+    dialog.message.setStyleSheet("font-size: 13px;")
+    dialog.set_buttons_type(DialogButtonTypes.QUESTION)
+    dialog.right_button.clicked.connect(dialog.close)
+    dialog.left_button.clicked.connect(
+        lambda: __open_acquisition_directory(dialog, acquisition_directory)
+    )
+
+    dialog.exec()
+
+
+def __open_acquisition_directory(dialog, acquisition_directory):
+    platform = get_platform()
+    if platform == "win":
+        os.startfile(acquisition_directory)
+    elif platform == "macos":
+        subprocess.call(["open", acquisition_directory])
+    else:
+        subprocess.call(["xdg-open", acquisition_directory])
+
+    dialog.close()

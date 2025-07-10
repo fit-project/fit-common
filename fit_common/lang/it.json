@@ -1,5 +1,8 @@
 {
    "VERIFY_PEC_SUCCESS_MSG": "La verifica della PEC è stata completata e il report PDF è stato generato. Vuoi aprirlo?",
     "VERIFICATION_COMPLETED": "Verifica completata",
-    "VALID_TIMESTAMP_REPORT": "Il PDF contiene un timestamp valido, è stato generato un report. Vuoi aprirlo?"
+    "VALID_TIMESTAMP_REPORT": "Il PDF contiene un timestamp valido, è stato generato un report. Vuoi aprirlo?",
+    "ACQUISITION_FINISHED_TITLE": "Acquisizione completata",
+    "ACQUISITION_FINISHED_MSG": "L'acquisizione è stata completata con successo. Vuoi aprire la cartella del caso?"
+
 }

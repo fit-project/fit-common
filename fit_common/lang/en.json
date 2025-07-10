@@ -2,6 +2,8 @@
     
     "VERIFY_PEC_SUCCESS_MSG" : "PEC verify has been completed and PDF report has been generated. Do you want to open it?",
     "VERIFICATION_COMPLETED": "Verification completed",
-    "VALID_TIMESTAMP_REPORT" : "PDF has a valid timestamp, report has been generated. Do you want to open it?"
+    "VALID_TIMESTAMP_REPORT" : "PDF has a valid timestamp, report has been generated. Do you want to open it?",
+    "ACQUISITION_FINISHED_TITLE": "Acquisition finished",
+    "ACQUISITION_FINISHED_MSG": "The acquisition has finished successfully. Do you want to open the case directory?"
     
 }
