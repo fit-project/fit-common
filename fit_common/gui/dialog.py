@@ -38,9 +38,10 @@ class Dialog(QtWidgets.QDialog, Ui_multipurpose_dialog):
         self.__set_buttons_message()
         self.progress_bar.hide()
 
+        self.content_box.adjustSize()
+        self.adjustSize()
         self.setMinimumWidth(self.content_box.width())
         self.content_top_bg.setMinimumWidth(self.content_box.width())
-        self.content_box.adjustSize()
 
     def set_buttons_type(self, buttons_type):
         if buttons_type == DialogButtonTypes.MESSAGE:
