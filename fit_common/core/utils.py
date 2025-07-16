@@ -9,7 +9,7 @@
 
 
 from shutil import which
-from distutils.version import StrictVersion
+from packaging.version import Version
 import os
 import sys
 import ntplib
@@ -81,7 +81,7 @@ def has_new_portable_version():
             if (
                 len(remote_tag_name) == 1
                 and len(local_tag_name) == 1
-                and StrictVersion(remote_tag_name[0]) > StrictVersion(local_tag_name[0])
+                and Version(remote_tag_name[0]) > Version(local_tag_name[0])
             ):
                 return True
             return False

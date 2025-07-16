@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fit-common"
-version = "0.1.18"
+version = "0.1.19"
 description = "Shared code between modules of the FIT project"
 authors = ["Fit Project <info@fit-project.org>"]
 
@@ -12,6 +12,7 @@ windows-tools = { version = "^2.5.0", markers = "sys_platform == 'win32'" }
 python = ">=3.9,<3.13"
 PySide6 = "6.9.0"
 ntplib = "^0.4.0"
+packaging = "^25.0"
 
 
 [build-system]
