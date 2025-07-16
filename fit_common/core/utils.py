@@ -8,7 +8,7 @@
 ######
 
 
-import distutils.spawn
+from shutil import which
 from distutils.version import StrictVersion
 import os
 import sys
@@ -102,7 +102,7 @@ def get_ntp_date_and_time(server):
 
 
 def is_cmd(name):
-    return distutils.spawn.find_executable(name) is not None
+    return which(name) is not None
 
 
 def get_version():
