@@ -94,10 +94,9 @@ def get_ntp_date_and_time(server):
         ntpDate = None
         client = ntplib.NTPClient()
         response = client.request(server, version=3)
+        return datetime.fromtimestamp(response.tx_time, timezone.utc)
     except Exception as exception:
-        return exception
-
-    return datetime.fromtimestamp(response.tx_time, timezone.utc)
+        return None
 
 
 
