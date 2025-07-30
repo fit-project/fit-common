@@ -3,6 +3,8 @@
     "VERIFICATION_COMPLETED": "Verifica completata",
     "VALID_TIMESTAMP_REPORT": "Il PDF contiene un timestamp valido, è stato generato un report. Vuoi aprirlo?",
     "ACQUISITION_FINISHED_TITLE": "Acquisizione completata",
-    "ACQUISITION_FINISHED_MSG": "L'acquisizione è stata completata con successo. Vuoi aprire la cartella del caso?"
-
+    "ACQUISITION_FINISHED_MSG": "L'acquisizione è stata completata con successo. Vuoi aprire la cartella del caso?",
+    "YES": "Sì",
+    "NO": "No",
+    "OK": "Ok"
 }

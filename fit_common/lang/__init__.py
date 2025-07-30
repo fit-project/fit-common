@@ -1,5 +1,5 @@
-import locale
 import json
+import locale
 from pathlib import Path
 
 LANG_DIR = Path(__file__).parent

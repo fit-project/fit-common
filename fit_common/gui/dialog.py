@@ -7,11 +7,12 @@
 # -----
 ######
 
-from PySide6 import QtCore, QtWidgets
 from enum import Enum
-from fit_common.constants.general import *
+
+from PySide6 import QtCore, QtWidgets
 
 from fit_common.gui.ui_multipurpose import Ui_multipurpose_dialog
+from fit_common.lang import load_translations
 
 
 class DialogButtonTypes(Enum):
@@ -42,6 +43,8 @@ class Dialog(QtWidgets.QDialog, Ui_multipurpose_dialog):
         self.adjustSize()
         self.setMinimumWidth(self.content_box.width())
         self.content_top_bg.setMinimumWidth(self.content_box.width())
+
+        self.translations = load_translations()
 
     def set_buttons_type(self, buttons_type):
         if buttons_type == DialogButtonTypes.MESSAGE:
@@ -89,12 +92,12 @@ class Dialog(QtWidgets.QDialog, Ui_multipurpose_dialog):
     def __set_buttons_message(self):
         self.close_button.hide()
         self.left_button.hide()
-        self.right_button.setText(OK)
+        self.right_button.setText(self.translations["OK"])
 
     def __set_buttons_question(self):
         self.close_button.hide()
-        self.left_button.setText(YES)
-        self.right_button.setText(NO)
+        self.left_button.setText(self.translations["YES"])
+        self.right_button.setText(self.translations["NO"])
         self.left_button.show()
 
     def __hide_buttons(self):
