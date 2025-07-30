@@ -21,11 +21,15 @@ class DebugLevel(Enum):
     VERBOSE = 2
 
 
-# Current debug level (can be overwritten externally)
-DEBUG_LEVEL = DebugLevel.LOG
+DEBUG_LEVEL = DebugLevel.NONE
+
+
+def set_debug_level(level: DebugLevel):
+    global DEBUG_LEVEL
+    DEBUG_LEVEL = level
+
 
 LOG_PATH = resolve_log_path("fit_debug.log")
-
 
 logger = logging.getLogger("fit_debug")
 logger.setLevel(logging.DEBUG)
