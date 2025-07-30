@@ -34,7 +34,7 @@ from .utils import (
 # NOTE: these are safe to import as long as debug.py does NOT import utils.py
 try:
     from .crash_handler import handle_crash
-    from .debug import DEBUG_LEVEL, DebugLevel, debug
+    from .debug import DEBUG_LEVEL, DebugLevel, debug, set_debug_level
     from .error_handler import log_exception
 except ImportError:
     # Optional if those files are not available yet during early development
@@ -61,6 +61,7 @@ __all__ = [
     "debug",
     "DEBUG_LEVEL",
     "DebugLevel",
+    "set_debug_level",
     "log_exception",
     "handle_crash",
 ]
