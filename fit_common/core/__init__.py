@@ -21,6 +21,7 @@ from .paths import (
 # ---- System & platform utilities ----
 from .utils import (
     find_free_port,
+    get_ntp_date_and_time,
     get_platform,
     get_version,
     has_new_portable_version,
@@ -55,6 +56,7 @@ __all__ = [
     "get_version",
     "find_free_port",
     "has_new_portable_version",
+    "get_ntp_date_and_time",
     # logging
     "debug",
     "DEBUG_LEVEL",
