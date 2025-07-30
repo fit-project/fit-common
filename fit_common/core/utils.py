@@ -8,18 +8,19 @@
 ######
 
 
-from shutil import which
-from packaging.version import Version
 import os
-import sys
-import ntplib
 import re
-
-import requests
-from datetime import datetime, timezone
-from configparser import ConfigParser
-
 import socket
+import sys
+from configparser import ConfigParser
+from datetime import datetime, timezone
+from shutil import which
+
+import ntplib
+import requests
+from packaging.version import Version
+
+from fit_common.core.paths import resolve_path
 
 
 def get_platform():
@@ -42,27 +43,22 @@ def is_admin():
     try:
         is_admin = os.getuid() == 0
     except AttributeError:
+
         if get_platform() == "win":
             import windows_tools.users as users
 
             is_admin = users.is_user_local_admin(os.getlogin())
+        else:
+            from fit_common.core.debug import debug
+
+            debug("Windows admin check failed", context="is_admin")
 
     return is_admin
+
 
 def is_npcap_installed():
     # reference https://npcap.com/guide/npcap-devguide.html section (Install-time detection)
     return os.path.exists("C:\\Program Files\\Npcap\\NPFInstall.exe")
-
-
-def resolve_path(path):
-    if getattr(sys, "frozen", False):
-        # If the 'frozen' flag is set, we are in bundled-app mode!
-        resolved_path = os.path.abspath(os.path.join(sys._MEIPASS, path))
-    else:
-        # Normal development mode.
-        resolved_path = os.path.abspath(os.path.join(os.getcwd(), path))
-
-    return resolved_path
 
 
 def has_new_portable_version():
@@ -86,7 +82,10 @@ def has_new_portable_version():
                 return True
             return False
         except Exception as e:
-            raise Exception(e)
+            from fit_common.core.error_handler import log_exception
+
+            log_exception(e, context="Error comparing remote and local version")
+            return False
 
 
 def get_ntp_date_and_time(server):
@@ -96,8 +95,10 @@ def get_ntp_date_and_time(server):
         response = client.request(server, version=3)
         return datetime.fromtimestamp(response.tx_time, timezone.utc)
     except Exception as exception:
-        return None
+        from fit_common.core.error_handler import log_exception
 
+        log_exception(exception, context=f"NTP request failed with server: {server}")
+        return None
 
 
 def is_cmd(name):
@@ -106,22 +107,6 @@ def is_cmd(name):
 
 def get_version():
     return "v0.0.0"
-
-
-def resolve_db_path(path):
-    if getattr(sys, "frozen", False):
-        if sys.platform == "win32":
-            local_path = os.path.join(os.path.expanduser("~"), "AppData", "Local")
-        elif sys.platform == "darwin":
-            local_path = os.path.expanduser("~/Library/Application Support")
-        else:
-            local_path = os.path.expanduser("~/.local/share")
-
-        resolve_db_path = os.path.join(local_path, path)
-    else:
-        resolve_db_path = os.path.abspath(os.path.join(os.getcwd(), path))
-
-    return resolve_db_path
 
 
 # search for the first free port to bind the proxy

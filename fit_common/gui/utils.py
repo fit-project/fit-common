@@ -9,15 +9,14 @@
 
 import os
 import subprocess
-
+from enum import Enum, auto
 
 from PySide6 import QtWidgets
 
-from enum import Enum, auto
-
-from fit_common.lang import load_translations
-from fit_common.gui.dialog import Dialog, DialogButtonTypes
 from fit_common.core.utils import get_platform
+from fit_common.gui.dialog import Dialog, DialogButtonTypes
+from fit_common.lang import load_translations
+
 
 class VerificationTypes(Enum):
     TIMESTAMP = auto()
@@ -30,17 +29,18 @@ class Status(Enum):
     SUCCESS = "Success"
     UNKNOWN = "Unknown"
 
+
 class State(Enum):
     INITIALIZATED = "initializated"
     STARTED = "Started"
     COMPLETED = "Completed"
     STOPPED = "Stopped"
 
+
 translations = load_translations()
 
-def show_finish_verification_dialog(path, verification_type):
 
-    
+def show_finish_verification_dialog(path, verification_type):
 
     title = translations["VERIFICATION_COMPLETED"]
     msg = translations["VERIFY_PEC_SUCCESS_MSG"]
