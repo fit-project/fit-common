@@ -45,19 +45,14 @@ logger.addHandler(handler)
 
 
 def debug(*args, context=None):
-    """
-    Logs debug information based on the current debug level.
-    """
     if DEBUG_LEVEL == DebugLevel.NONE:
         return
 
-    timestamp = datetime.now().isoformat(timespec="seconds")
     msg = " ".join(str(a) for a in args)
-    prefix = f"[DEBUG] {timestamp}"
-    line = f"{prefix} - {context + ': ' if context else ''}{msg}"
+    line = f"{context + ': ' if context else ''}{msg}"
 
     if DEBUG_LEVEL in (DebugLevel.LOG, DebugLevel.VERBOSE):
         logger.debug(line)
 
     if DEBUG_LEVEL == DebugLevel.VERBOSE:
-        print(line)
+        print(f"[DEBUG] {datetime.now().isoformat(timespec='seconds')} - {line}")
