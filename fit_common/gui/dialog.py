@@ -32,6 +32,8 @@ class Dialog(QtWidgets.QDialog, Ui_multipurpose_dialog):
         self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
         self.setAttribute(QtCore.Qt.WidgetAttribute.WA_TranslucentBackground)
 
+        self.__translations = load_translations()
+
         self.__set_icon_severity(severity)
         self.__set_title(title)
         self.__set_message(message)
@@ -43,8 +45,6 @@ class Dialog(QtWidgets.QDialog, Ui_multipurpose_dialog):
         self.adjustSize()
         self.setMinimumWidth(self.content_box.width())
         self.content_top_bg.setMinimumWidth(self.content_box.width())
-
-        self.translations = load_translations()
 
     def set_buttons_type(self, buttons_type):
         if buttons_type == DialogButtonTypes.MESSAGE:
@@ -92,12 +92,12 @@ class Dialog(QtWidgets.QDialog, Ui_multipurpose_dialog):
     def __set_buttons_message(self):
         self.close_button.hide()
         self.left_button.hide()
-        self.right_button.setText(self.translations["OK"])
+        self.right_button.setText(self.__translations["OK"])
 
     def __set_buttons_question(self):
         self.close_button.hide()
-        self.left_button.setText(self.translations["YES"])
-        self.right_button.setText(self.translations["NO"])
+        self.left_button.setText(self.__translations["YES"])
+        self.right_button.setText(self.__translations["NO"])
         self.left_button.show()
 
     def __hide_buttons(self):
