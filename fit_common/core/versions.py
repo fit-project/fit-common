@@ -17,19 +17,16 @@ import tomllib
 from packaging.version import InvalidVersion, Version
 
 
-def get_local_version():
-    try:
+def find_pyproject(start_path: Path) -> Path | None:
+    current = start_path.resolve()
+    for parent in [current, *current.parents]:
+        pyproject = parent / "pyproject.toml"
+        if pyproject.exists():
+            return pyproject
+    return None
 
-        project_root = Path(__file__).resolve().parents[3]
-        pyproject_path = project_root / "pyproject.toml"
-        if pyproject_path.exists():
-            with pyproject_path.open("rb") as f:
-                data = tomllib.load(f)
-            if "project" in data and "version" in data["project"]:
-                return data["project"]["version"]
-    except Exception:
-        pass
 
+def get_version_from_bundle() -> str | None:
     try:
         main_module = sys.modules["__main__"]
         main_path = Path(main_module.__file__).resolve()
@@ -42,8 +39,23 @@ def get_local_version():
             return getattr(version_mod, "__version__", "unknown version")
     except Exception:
         pass
-
     return None
+
+
+def get_version(start_path: Path | None = None) -> str | None:
+    try:
+        if start_path is None:
+            start_path = Path(sys.modules["__main__"].__file__).resolve()
+
+        pyproject_path = find_pyproject(start_path)
+        if pyproject_path:
+            with pyproject_path.open("rb") as f:
+                data = tomllib.load(f)
+            return data.get("tool", {}).get("poetry", {}).get("version")
+    except Exception:
+        pass
+
+    return get_version_from_bundle()
 
 
 def get_remote_tag_version(repo: str):

@@ -37,8 +37,8 @@ try:
     from .debug import DEBUG_LEVEL, DebugLevel, debug, set_debug_level
     from .error_handler import log_exception
     from .versions import (
-        get_local_version,
         get_remote_tag_version,
+        get_version,
         has_new_release_version,
     )
 except ImportError:
@@ -58,7 +58,6 @@ __all__ = [
     "is_admin",
     "is_npcap_installed",
     "is_cmd",
-    "get_version",
     "find_free_port",
     "has_new_portable_version",
     "get_ntp_date_and_time",
@@ -72,7 +71,7 @@ __all__ = [
     "handle_crash",
     "set_gui_crash_handler",
     # version
-    "get_local_version",
+    "get_version",
     "get_remote_tag_version",
     "has_new_release_version",
 ]
