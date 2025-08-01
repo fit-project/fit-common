@@ -8,6 +8,7 @@
 ######
 
 
+import inspect
 import os
 import re
 import socket
@@ -114,3 +115,11 @@ def find_free_port():
     sock = socket.socket()
     sock.bind(("127.0.0.1", 0))
     return sock.getsockname()[1]
+
+
+def get_context(obj):
+    """Return 'ClassName.method_name' for the calling method."""
+    frame = inspect.currentframe().f_back
+    class_name = obj.__class__.__name__
+    method_name = frame.f_code.co_name
+    return f"{class_name}.{method_name}"
