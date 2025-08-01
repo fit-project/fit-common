@@ -24,7 +24,6 @@ from .utils import (
     get_context,
     get_ntp_date_and_time,
     get_platform,
-    get_version,
     has_new_portable_version,
     is_admin,
     is_cmd,
@@ -37,6 +36,11 @@ try:
     from .crash_handler import handle_crash, set_gui_crash_handler
     from .debug import DEBUG_LEVEL, DebugLevel, debug, set_debug_level
     from .error_handler import log_exception
+    from .versions import (
+        get_local_version,
+        get_remote_tag_version,
+        has_new_release_version,
+    )
 except ImportError:
     # Optional if those files are not available yet during early development
     debug = None
@@ -67,4 +71,8 @@ __all__ = [
     "log_exception",
     "handle_crash",
     "set_gui_crash_handler",
+    # version
+    "get_local_version",
+    "get_remote_tag_version",
+    "has_new_release_version",
 ]

@@ -91,7 +91,6 @@ def has_new_portable_version():
 
 def get_ntp_date_and_time(server):
     try:
-        ntpDate = None
         client = ntplib.NTPClient()
         response = client.request(server, version=3)
         return datetime.fromtimestamp(response.tx_time, timezone.utc)
@@ -104,10 +103,6 @@ def get_ntp_date_and_time(server):
 
 def is_cmd(name):
     return which(name) is not None
-
-
-def get_version():
-    return "v0.0.0"
 
 
 # search for the first free port to bind the proxy
