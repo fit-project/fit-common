@@ -9,7 +9,7 @@ packages = [{ include = "fit_common" }]
 [tool.poetry.dependencies]
 windows-tools = { version = "^2.5.0", markers = "sys_platform == 'win32'" }
 
-python = ">=3.9,<3.13"
+python = ">=3.11,<3.13"
 PySide6 = "6.9.0"
 ntplib = "^0.4.0"
 packaging = "^25.0"
