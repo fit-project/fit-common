@@ -354,6 +354,8 @@ class PdfReportBuilder:
             os.remove(self.__output_front)
         if os.path.exists(self.__output_content):
             os.remove(self.__output_content)
+        if os.path.exists(self.__verify_info_file_path):
+            os.remove(self.__verify_info_file_path)
 
     def __load_template(self, template) -> Template:
         return Template(
