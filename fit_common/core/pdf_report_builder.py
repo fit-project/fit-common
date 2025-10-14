@@ -117,7 +117,7 @@ class PdfReportBuilder:
             )
 
         # Case Information
-        case_rows = [
+         case_rows = [
             {
                 "value": self.__translations["CASE"],
                 "desc": self.__case_info.get("name", "").strip() or "N/A",
@@ -143,12 +143,19 @@ class PdfReportBuilder:
                 "value": self.__translations["NUMBER"],
                 "desc": self.__case_info.get("proceeding_number", "").strip() or "N/A",
             },
-            {
-                "value": self.__translations["ACQUISITION_TYPE"],
-                "desc": self.__acquisition_type,
-            },
-            {"value": self.__translations["ACQUISITION_DATE"], "desc": self.__ntp},
         ]
+
+        if self.acquisition_type:
+            case_rows.append(
+                {
+                    "value": self.__translations["ACQUISITION_TYPE"],
+                    "desc": self.__acquisition_type,
+                }
+            )
+
+        case_rows.append(
+                {"value": self.__translations["ACQUISITION_DATE"], "desc": self.__ntp}
+        )
 
         sections.append(
             {
