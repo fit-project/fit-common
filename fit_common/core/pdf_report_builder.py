@@ -39,7 +39,39 @@ class PdfReportBuilder:
         self.__output_front = os.path.join(self.__temp_dir.name, "front_report.pdf")
         self.__output_content = os.path.join(self.__temp_dir.name, "content_report.pdf")
 
-    def generate_pdf(self, type, ntp):
+    @property
+    def ntp(self):
+        return self.__ntp
+
+    @ntp.setter
+    def ntp(self, ntp):
+        self.__ntp = ntp
+
+    @property
+    def acquisition_type(self):
+        return self.__acquisition_type
+
+    @acquisition_type.setter
+    def acquisition_type(self, acquisition_type):
+        self.__acquisition_type = acquisition_type
+
+    @property
+    def verify_result(self):
+        return self.__verify_result
+
+    @verify_result.setter
+    def verify_result(self, verify_result):
+        self.__verify_result = verify_result
+
+    @property
+    def verify_info_file_path(self):
+        return self.__verify_info_file_path
+
+    @verify_info_file_path.setter
+    def verify_info_file_path(self, verify_info_file_path):
+        self.__verify_info_file_path = verify_info_file_path
+
+    def generate_pdf(self):
         logo_path = files("fit_assets.images") / "logo-640x640.png"
         logo_bytes = logo_path.read_bytes()
         logo_base64 = base64.b64encode(logo_bytes).decode("utf-8")
@@ -66,22 +98,23 @@ class PdfReportBuilder:
             }
         )
 
-        # Digital Forensics
-        sections.append(
-            {
-                "title": self.__translations["T4"],
-                "type": "digital_forensics",
-                "description": self.__translations["T4DESCR"],
-                "subtitles": {
-                    "cc": self.__translations["TITLECC"],
-                    "h": self.__translations["TITLEH"],
-                },
-                "contents": {
-                    "cc": self.__translations["CCDESCR"],
-                    "h": self.__translations["HDESCR"],
-                },
-            }
-        )
+        if self.__report_type == ReportType.ACQUISITION:
+            # Digital Forensics
+            sections.append(
+                {
+                    "title": self.__translations["T4"],
+                    "type": "digital_forensics",
+                    "description": self.__translations["T4DESCR"],
+                    "subtitles": {
+                        "cc": self.__translations["TITLECC"],
+                        "h": self.__translations["TITLEH"],
+                    },
+                    "contents": {
+                        "cc": self.__translations["CCDESCR"],
+                        "h": self.__translations["HDESCR"],
+                    },
+                }
+            )
 
         # Case Information
         case_rows = [
@@ -110,8 +143,11 @@ class PdfReportBuilder:
                 "value": self.__translations["NUMBER"],
                 "desc": self.__case_info.get("proceeding_number", "").strip() or "N/A",
             },
-            {"value": self.__translations["ACQUISITION_TYPE"], "desc": type},
-            {"value": self.__translations["ACQUISITION_DATE"], "desc": ntp},
+            {
+                "value": self.__translations["ACQUISITION_TYPE"],
+                "desc": self.__acquisition_type,
+            },
+            {"value": self.__translations["ACQUISITION_DATE"], "desc": self.__ntp},
         ]
 
         sections.append(
@@ -143,102 +179,129 @@ class PdfReportBuilder:
         else:
             logo = "<div></div>"
 
-        # Acquisition Files
-        acquisition_files = self._acquisition_files_names()
-        file_checks = [
-            (
-                self.__screen_recorder_filename,
-                self.__translations["AVID"],
-            ),
-            ("acquisition.hash", self.__translations["HASHD"]),
-            ("acquisition.log", self.__translations["LOGD"]),
-            (
-                self.__packet_capture_filename,
-                self.__translations["PCAPD"],
-            ),
-            ("acquisition.zip", self.__translations["ZIPD"]),
-            ("whois.txt", self.__translations["WHOISD"]),
-            ("headers.txt", self.__translations["HEADERSD"]),
-            ("nslookup.txt", self.__translations["NSLOOKUPD"]),
-            ("server.cer", self.__translations["CERD"]),
-            ("sslkey.log", self.__translations["SSLKEYD"]),
-            ("traceroute.txt", self.__translations["TRACEROUTED"]),
-        ]
+        if self.__report_type == ReportType.ACQUISITION:
+            # Acquisition Files
+            acquisition_files = self._acquisition_files_names()
+            file_checks = [
+                (
+                    self.__screen_recorder_filename,
+                    self.__translations["AVID"],
+                ),
+                ("acquisition.hash", self.__translations["HASHD"]),
+                ("acquisition.log", self.__translations["LOGD"]),
+                (
+                    self.__packet_capture_filename,
+                    self.__translations["PCAPD"],
+                ),
+                ("acquisition.zip", self.__translations["ZIPD"]),
+                ("whois.txt", self.__translations["WHOISD"]),
+                ("headers.txt", self.__translations["HEADERSD"]),
+                ("nslookup.txt", self.__translations["NSLOOKUPD"]),
+                ("server.cer", self.__translations["CERD"]),
+                ("sslkey.log", self.__translations["SSLKEYD"]),
+                ("traceroute.txt", self.__translations["TRACEROUTED"]),
+            ]
 
-        file_rows = [
-            {"value": acquisition_files[file], "desc": desc}
-            for file, desc in file_checks
-            if file in acquisition_files and acquisition_files[file]
-        ]
+            file_rows = [
+                {"value": acquisition_files[file], "desc": desc}
+                for file, desc in file_checks
+                if file in acquisition_files and acquisition_files[file]
+            ]
 
-        sections.append(
-            {
-                "title": self.__translations["T5"],
-                "type": "file_info",
-                "description": self.__translations["T5DESCR"],
-                "columns": [self.__translations["NAME"], self.__translations["DESCR"]],
-                "rows": file_rows,
-                "note": "",
-            }
-        )
-
-        # ZIP Content
-        zip_enum = self._zip_files_enum()
-        if zip_enum:
             sections.append(
                 {
-                    "title": self.__translations["T7"],
-                    "type": "zip_content",
-                    "description": self.__translations["T7DESCR"],
-                    "content": zip_enum,
+                    "title": self.__translations["T5"],
+                    "type": "file_info",
+                    "description": self.__translations["T5DESCR"],
+                    "columns": [
+                        self.__translations["NAME"],
+                        self.__translations["DESCR"],
+                    ],
+                    "rows": file_rows,
+                    "note": "",
                 }
             )
 
-        # hash
-        hash_content = self.__hash_reader()
-        if hash_content:
-            sections.append(
-                {
-                    "title": self.__translations["T6"],
-                    "type": "hash",
-                    "description": self.__translations["T6DESCR"],
-                    "content": hash_content,
-                }
-            )
+            # ZIP Content
+            zip_enum = self._zip_files_enum()
+            if zip_enum:
+                sections.append(
+                    {
+                        "title": self.__translations["T7"],
+                        "type": "zip_content",
+                        "description": self.__translations["T7DESCR"],
+                        "content": zip_enum,
+                    }
+                )
 
-        # whois
-        whois_content = self.__read_file("whois.txt")
-        if whois_content:
-            sections.append(
-                {
-                    "title": self.__translations["T3"],
-                    "type": "whois",
-                    "description": self.__translations["T3DESCR"],
-                    "content": whois_content,
-                }
-            )
+            # hash
+            hash_content = self.__hash_reader()
+            if hash_content:
+                sections.append(
+                    {
+                        "title": self.__translations["T6"],
+                        "type": "hash",
+                        "description": self.__translations["T6DESCR"],
+                        "content": hash_content,
+                    }
+                )
 
-        # Screenshots
-        screenshot_content = self.__insert_screenshot()
-        if screenshot_content:
-            sections.append(
-                {
-                    "title": self.__translations["T8"],
-                    "type": "screenshot",
-                    "description": self.__translations["T8DESCR"],
-                    "content": screenshot_content,
-                }
-            )
+            # whois
+            whois_content = self.__read_file("whois.txt")
+            if whois_content:
+                sections.append(
+                    {
+                        "title": self.__translations["T3"],
+                        "type": "whois",
+                        "description": self.__translations["T3DESCR"],
+                        "content": whois_content,
+                    }
+                )
 
-        # Video
-        video_content = self.__insert_video_hyperlink()
-        if video_content:
+            # Screenshots
+            screenshot_content = self.__insert_screenshot()
+            if screenshot_content:
+                sections.append(
+                    {
+                        "title": self.__translations["T8"],
+                        "type": "screenshot",
+                        "description": self.__translations["T8DESCR"],
+                        "content": screenshot_content,
+                    }
+                )
+
+            # Video
+            video_content = self.__insert_video_hyperlink()
+            if video_content:
+                sections.append(
+                    {
+                        "title": self.__translations["T9"],
+                        "type": "video",
+                        "description": self.__translations["T9DESCR"],
+                        "content": video_content,
+                    }
+                )
+
+        if self.__report_type == ReportType.VERIFY:
+            # Verification report
+            verification_result = ""
+            if self.__verify_result:
+                verification_result = (
+                    self.__translations["VERIFI_OK"]
+                    if self.__verify_result
+                    else self.__translations["VERIFI_KO"]
+                )
+            info_file = ""
+            if self.__verify_info_file_path:
+                with open(self.__verify_info_file_path, "r") as f:
+                    info_file = f.read()
+
             sections.append(
                 {
-                    "title": self.__translations["T9"],
-                    "type": "video",
-                    "description": self.__translations["T9DESCR"],
-                    "content": video_content,
+                    "title": self.__translations["VERIFICATION"],
+                    "type": "verification_report",
+                    "verification_result": verification_result,
+                    "content": info_file,
                 }
             )
 
