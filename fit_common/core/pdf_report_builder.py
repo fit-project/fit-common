@@ -38,6 +38,10 @@ class PdfReportBuilder:
         self.__temp_dir = tempfile.TemporaryDirectory()
         self.__output_front = os.path.join(self.__temp_dir.name, "front_report.pdf")
         self.__output_content = os.path.join(self.__temp_dir.name, "content_report.pdf")
+        self.__acquisition_type = None
+        self.__ntp = None
+        self.__verify_result = None
+        self.__verify_info_file_path = None
 
     @property
     def ntp(self):
