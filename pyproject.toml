@@ -6,6 +6,13 @@ authors = ["Fit Project <info@fit-project.org>"]
 
 packages = [{ include = "fit_common" }]
 
+include = [
+    "fit_assets/icons/info-circle.png",
+    "fit_assets/templates/front.html",
+    "fit_assets/templates/content.html",
+    "fit_assets/images/logo-640x640.png"
+]
+
 [tool.poetry.dependencies]
 windows-tools = { version = "^2.5.0", markers = "sys_platform == 'win32'" }
 
@@ -14,6 +21,9 @@ PySide6 = "6.9.0"
 ntplib = "^0.4.0"
 packaging = "^25.0"
 requests = "^2.32.4"
+jinja2 = "^3.1.6"
+pypdf = "^6.1.1"
+xhtml2pdf = "^0.2.17"
 
 
 [build-system]
