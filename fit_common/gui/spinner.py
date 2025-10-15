@@ -2,6 +2,7 @@ import os
 import sys
 import threading
 import time
+from importlib.resources import files
 
 from PySide6.QtCore import QEvent, QObject, Qt, QThread, Signal, Slot
 from PySide6.QtGui import QMovie
@@ -26,6 +27,8 @@ class Spinner(QObject):
         super().__init__(parent)
         self._parent = parent
         self._gif_path = gif_path
+
+        self._gif_path = files("fit_assets.images") / "spinner.gif"
 
         # Overlay full-screen sul parent
         self._overlay = QWidget(parent)
