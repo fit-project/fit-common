@@ -10,7 +10,8 @@ include = [
     "fit_assets/icons/info-circle.png",
     "fit_assets/templates/front.html",
     "fit_assets/templates/content.html",
-    "fit_assets/images/logo-640x640.png"
+    "fit_assets/images/logo-640x640.png",
+    "fit_assets/images/spinner.gif",
 ]
 
 [tool.poetry.dependencies]
