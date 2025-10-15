@@ -32,7 +32,7 @@ class Spinner(QObject):
 
         self._movie = None
         if os.path.exists(self._gif_path):
-            self._movie = QMovie(self._gif_path)
+            self._movie = QMovie(str(self._gif_path))
             self._label.setMovie(self._movie)
         else:
             self._label.setText(self.__translations["LOADING"])
