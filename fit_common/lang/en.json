@@ -7,5 +7,6 @@
     "ACQUISITION_FINISHED_MSG": "The acquisition has finished successfully. Do you want to open the case directory?",
     "YES": "Yes",
     "NO": "No",
-    "OK": "Ok"
+    "OK": "Ok",
+    "LOADING": "Loading..."
 }

@@ -6,5 +6,6 @@
     "ACQUISITION_FINISHED_MSG": "L'acquisizione è stata completata con successo. Vuoi aprire la cartella del caso?",
     "YES": "Sì",
     "NO": "No",
-    "OK": "Ok"
+    "OK": "Ok",
+     "LOADING": "Caricamento..."
 }
