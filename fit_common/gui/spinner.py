@@ -52,6 +52,11 @@ class Spinner(QObject):
     def stop(self):
         self._ui_stop.emit()
 
+    def state(self):
+        if self._movie:
+            return self._movie.state()
+        return None
+
     def __ui_start(self):
         self._sync_geometry()
         self._overlay.show()
