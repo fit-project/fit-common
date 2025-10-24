@@ -27,7 +27,7 @@ def resolve_path(path: str) -> str:
 def resolve_app_path(subfolder: str = "FIT") -> str:
     """
     Returns the base writable application path depending on the platform.
-    - Windows: %LOCALAPPDATA%\FIT
+    - Windows: %LOCALAPPDATA%\\FIT
     - macOS: ~/Library/Application Support/FIT
     - Linux: ~/.local/share/FIT
     - Development: current working directory/FIT
