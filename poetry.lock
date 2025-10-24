@@ -1727,5 +1727,5 @@ test = ["coverage (>=5.3)", "tomli (>=2.0.1) ; python_version < \"3.11\"", "tox"
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">=3.11,<3.13"
-content-hash = "c05c5a672a4efb38c3ef18ddc1b06cba9b200d6dd9fe0f9f0165ff1ec1b683e2"
+python-versions = ">=3.11,<3.14"
+content-hash = "2282f6ba882e6c3eea88600553c972aa22dd86ae9f831eb57c9cffb48ca05842"
