@@ -6,6 +6,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # -----
 ######
+
 from fit_common.gui.dialog import Dialog
 
 
