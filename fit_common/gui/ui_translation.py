@@ -9,7 +9,7 @@
 
 from typing import Mapping
 
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 
 def translate_ui(translations: Mapping[str, str], root: QtWidgets.QWidget) -> None:
@@ -87,7 +87,7 @@ def _apply_translation(
 
 
 def _apply_action_translation(
-    translations: Mapping[str, str], action: QtWidgets.QAction
+    translations: Mapping[str, str], action: QtGui.QAction
 ) -> None:
     name = action.objectName()
     if not name:
