@@ -26,6 +26,7 @@ from .utils import (
     get_platform,
     has_new_portable_version,
     is_admin,
+    is_bundled,
     is_cmd,
     is_npcap_installed,
 )
@@ -58,6 +59,7 @@ __all__ = [
     "is_admin",
     "is_npcap_installed",
     "is_cmd",
+    "is_bundled",
     "find_free_port",
     "has_new_portable_version",
     "get_ntp_date_and_time",
