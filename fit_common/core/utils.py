@@ -8,6 +8,7 @@
 ######
 
 
+import ctypes
 import inspect
 import os
 import re
@@ -21,6 +22,7 @@ import ntplib
 import requests
 from packaging.version import Version
 
+from fit_common.core.debug import debug
 from fit_common.core.paths import resolve_path
 
 
@@ -43,22 +45,20 @@ def is_bundled():
     return bool(getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"))
 
 
-def is_admin():
-    is_admin = False
+def is_admin() -> bool:
     try:
-        is_admin = os.getuid() == 0
+        # macOS/Linux
+        return os.geteuid() == 0
     except AttributeError:
-
+        # Windows
         if get_platform() == "win":
-            import windows_tools.users as users
-
-            is_admin = users.is_user_local_admin(os.getlogin())
-        else:
-            from fit_common.core.debug import debug
-
-            debug("Windows admin check failed", context="is_admin")
-
-    return is_admin
+            try:
+                return bool(ctypes.windll.shell32.IsUserAnAdmin())
+            except Exception as exc:
+                debug(f"Windows admin check failed: {exc}", context="is_admin")
+                return False
+        debug("Admin check failed: unsupported platform", context="is_admin")
+        return False
 
 
 def is_npcap_installed():
