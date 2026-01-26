@@ -39,6 +39,10 @@ def get_platform():
     return platforms[sys.platform]
 
 
+def is_bundled():
+    return bool(getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"))
+
+
 def is_admin():
     is_admin = False
     try:
