@@ -50,10 +50,14 @@ def resolve_app_path(subfolder: str = "FIT") -> str:
 def resolve_db_path(filename: str) -> str:
     db_dir = os.path.join(resolve_app_path(), "data")
     os.makedirs(db_dir, exist_ok=True)
+    if not filename:
+        return db_dir
     return os.path.join(db_dir, filename)
 
 
 def resolve_log_path(filename: str) -> str:
     log_dir = os.path.join(resolve_app_path(), "logs")
     os.makedirs(log_dir, exist_ok=True)
+    if not filename:
+        return log_dir
     return os.path.join(log_dir, filename)
