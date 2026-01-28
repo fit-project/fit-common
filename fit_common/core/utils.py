@@ -10,9 +10,11 @@
 
 import ctypes
 import inspect
+import locale
 import os
 import re
 import socket
+import subprocess
 import sys
 from configparser import ConfigParser
 from datetime import datetime, timezone
@@ -24,6 +26,74 @@ from packaging.version import Version
 
 from fit_common.core.debug import debug
 from fit_common.core.paths import resolve_path
+
+DEFAULT_LANG = "en"
+
+
+def __normalize_lang(value: str | None) -> str | None:
+    if not value:
+        return None
+    cleaned = value.strip()
+    if not cleaned:
+        return None
+    cleaned = cleaned.split(".")[0].replace("-", "_")
+    return cleaned.split("_")[0].lower() if cleaned else None
+
+
+def get_system_lang():
+    try:
+        if sys.platform == "darwin":
+            try:
+                result = subprocess.run(
+                    ["defaults", "read", "-g", "AppleLanguages"],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if result.returncode == 0:
+                    for line in result.stdout.splitlines():
+                        line = line.strip().strip('",')
+                        if line and line not in ("(", ")"):
+                            normalized = __normalize_lang(line)
+                            if normalized:
+                                return normalized
+            except Exception:
+                pass
+            try:
+                result = subprocess.run(
+                    ["defaults", "read", "-g", "AppleLocale"],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if result.returncode == 0 and result.stdout.strip():
+                    normalized = __normalize_lang(result.stdout.strip())
+                    if normalized:
+                        return normalized
+            except Exception:
+                pass
+        elif sys.platform == "win32":
+            try:
+                import ctypes
+
+                lang_id = ctypes.windll.kernel32.GetUserDefaultUILanguage()
+                win_locale = locale.windows_locale.get(lang_id)
+                normalized = __normalize_lang(win_locale)
+                if normalized:
+                    return normalized
+            except Exception:
+                pass
+        else:
+            for key in ("LC_ALL", "LC_MESSAGES", "LANG"):
+                normalized = __normalize_lang(os.environ.get(key))
+                if normalized:
+                    return normalized
+        locale.setlocale(locale.LC_ALL, "")
+        lang = locale.getlocale()[0]
+        normalized = __normalize_lang(lang)
+        return normalized or DEFAULT_LANG
+    except Exception:
+        return DEFAULT_LANG
 
 
 def get_platform():
