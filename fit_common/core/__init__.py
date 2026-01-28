@@ -20,6 +20,7 @@ from .paths import (
 
 # ---- System & platform utilities ----
 from .utils import (
+    DEFAULT_LANG,
     find_free_port,
     get_context,
     get_ntp_date_and_time,
@@ -58,6 +59,7 @@ __all__ = [
     # utils
     "get_platform",
     "get_system_lang",
+    "DEFAULT_LANG",
     "is_admin",
     "is_npcap_installed",
     "is_cmd",
