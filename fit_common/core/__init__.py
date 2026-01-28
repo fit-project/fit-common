@@ -24,6 +24,7 @@ from .utils import (
     get_context,
     get_ntp_date_and_time,
     get_platform,
+    get_system_lang,
     has_new_portable_version,
     is_admin,
     is_bundled,
@@ -56,6 +57,7 @@ __all__ = [
     "resolve_app_path",
     # utils
     "get_platform",
+    "get_system_lang",
     "is_admin",
     "is_npcap_installed",
     "is_cmd",
