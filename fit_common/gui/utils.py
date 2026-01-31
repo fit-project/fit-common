@@ -9,6 +9,7 @@
 
 import os
 import subprocess
+import sys
 from enum import Enum, auto
 
 from PySide6 import QtWidgets
@@ -38,6 +39,36 @@ class State(Enum):
 
 
 translations = load_translations()
+
+
+def show_dialog(
+    severity: str = "information",
+    title: str = "",
+    message: str = "",
+    details: str = "",
+) -> None:
+    try:
+        app = QtWidgets.QApplication.instance()
+        if app is None:
+            app = QtWidgets.QApplication(sys.argv)
+
+        severity_map = {
+            "error": QtWidgets.QMessageBox.Icon.Critical,
+            "critical": QtWidgets.QMessageBox.Icon.Critical,
+            "warning": QtWidgets.QMessageBox.Icon.Warning,
+            "warn": QtWidgets.QMessageBox.Icon.Warning,
+            "question": QtWidgets.QMessageBox.Icon.Question,
+            "info": QtWidgets.QMessageBox.Icon.Information,
+            "information": QtWidgets.QMessageBox.Icon.Information,
+        }
+        icon = severity_map.get(
+            severity.lower(), QtWidgets.QMessageBox.Icon.Information
+        )
+
+        dialog = Dialog(title, message, details, icon)
+        dialog.exec()
+    except Exception:
+        return
 
 
 def show_finish_verification_dialog(path, verification_type):
