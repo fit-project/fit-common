@@ -66,6 +66,7 @@ def show_dialog(
         )
 
         dialog = Dialog(title, message, details, icon)
+        dialog.right_button.clicked.connect(dialog.close)
         dialog.exec()
     except Exception:
         return
