@@ -182,8 +182,11 @@ def is_cmd(name):
 # search for the first free port to bind the proxy
 def find_free_port():
     sock = socket.socket()
-    sock.bind(("127.0.0.1", 0))
-    return sock.getsockname()[1]
+    try:
+        sock.bind(("127.0.0.1", 0))
+        return sock.getsockname()[1]
+    finally:
+        sock.close()
 
 
 def get_context(obj):
