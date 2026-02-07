@@ -41,8 +41,12 @@ def __normalize_lang(value: str | None) -> str | None:
 
 
 def get_system_lang():
+    FIT_USER_SYSTEM_LANG = os.environ.get("FIT_USER_SYSTEM_LANG", "")
+    normalized_user_lang = __normalize_lang(FIT_USER_SYSTEM_LANG)
+    if normalized_user_lang:
+        return normalized_user_lang
     try:
-        if sys.platform == "darwin":
+        if get_platform() == "macos":
             try:
                 result = subprocess.run(
                     ["defaults", "read", "-g", "AppleLanguages"],
@@ -72,7 +76,7 @@ def get_system_lang():
                         return normalized
             except Exception:
                 pass
-        elif sys.platform == "win32":
+        elif get_platform() == "win":
             try:
                 import ctypes
 

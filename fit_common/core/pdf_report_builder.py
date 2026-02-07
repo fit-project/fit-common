@@ -19,7 +19,7 @@ from jinja2 import Template
 from pypdf import PdfReader, PdfWriter
 from xhtml2pdf import pisa
 
-from fit_common.core import get_version
+from fit_common.core import AcquisitionType, get_version
 
 
 class ReportType(Enum):
@@ -127,6 +127,16 @@ class PdfReportBuilder:
                         "cc": self.__translations["CCDESCR"],
                         "h": self.__translations["HDESCR"],
                     },
+                }
+            )
+
+        if self.__acquisition_type == AcquisitionType.WEB:
+            # Format of the acquired web content (WACZ)
+            sections.append(
+                {
+                    "title": self.__translations["WACZ_TITLE"],
+                    "type": "wacz_description",
+                    "content": self.__translations["WACZ_DESCRIPTION"],
                 }
             )
 

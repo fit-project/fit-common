@@ -11,6 +11,7 @@
 # avoiding circular imports and keeping modules decoupled.
 
 # ---- Paths utilities ----
+from .acquisition_type import AcquisitionType
 from .paths import (
     resolve_app_path,
     resolve_db_path,
@@ -56,6 +57,8 @@ __all__ = [
     "resolve_log_path",
     "resolve_db_path",
     "resolve_app_path",
+    # acquisition
+    "AcquisitionType",
     # utils
     "get_platform",
     "get_system_lang",
