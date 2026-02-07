@@ -41,7 +41,7 @@ class PdfReportBuilder:
         self.__translations = translations
         self.__path = path
         self.__filename = filename
-        self.__case_info = case_info
+        self.__case_info = case_info or {}
         self.__screen_recorder_filename = screen_recorder_filename
         self.__packet_capture_filename = packet_capture_filename
         self.__report_type = report_type
@@ -84,6 +84,12 @@ class PdfReportBuilder:
     @verify_info_file_path.setter
     def verify_info_file_path(self, verify_info_file_path):
         self.__verify_info_file_path = verify_info_file_path
+
+    @staticmethod
+    def __safe_text(value) -> str:
+        if value is None:
+            return ""
+        return str(value).strip()
 
     def generate_pdf(self):
         logo_path = files("fit_assets.images") / "logo-640x640.png"
@@ -144,28 +150,29 @@ class PdfReportBuilder:
         case_rows = [
             {
                 "value": self.__translations["CASE"],
-                "desc": self.__case_info.get("name", "").strip() or "N/A",
+                "desc": self.__safe_text(self.__case_info.get("name")) or "N/A",
             },
             {
                 "value": self.__translations["LAWYER"],
-                "desc": self.__case_info.get("lawyer_name", "").strip() or "N/A",
+                "desc": self.__safe_text(self.__case_info.get("lawyer_name")) or "N/A",
             },
             {
                 "value": self.__translations["OPERATOR"],
-                "desc": self.__case_info.get("operator", "").strip() or "N/A",
+                "desc": self.__safe_text(self.__case_info.get("operator")) or "N/A",
             },
             {
                 "value": self.__translations["PROCEEDING"],
-                "desc": str(self.__case_info.get("proceeding_type_name", "")).strip()
+                "desc": self.__safe_text(self.__case_info.get("proceeding_type_name"))
                 or "N/A",
             },
             {
                 "value": self.__translations["COURT"],
-                "desc": self.__case_info.get("courthouse", "").strip() or "N/A",
+                "desc": self.__safe_text(self.__case_info.get("courthouse")) or "N/A",
             },
             {
                 "value": self.__translations["NUMBER"],
-                "desc": self.__case_info.get("proceeding_number", "").strip() or "N/A",
+                "desc": self.__safe_text(self.__case_info.get("proceeding_number"))
+                or "N/A",
             },
         ]
 
@@ -190,7 +197,7 @@ class PdfReportBuilder:
                     self.__translations["CASEDATA"],
                 ],
                 "rows": case_rows,
-                "note": self.__case_info.get("notes", "").strip() or "N/A",
+                "note": self.__safe_text(self.__case_info.get("notes")) or "N/A",
             }
         )
 
