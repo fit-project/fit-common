@@ -16,20 +16,22 @@ class Ui_multipurpose_dialog(object):
         multipurpose_dialog.resize(400, 300)
         multipurpose_dialog.setMinimumSize(QtCore.QSize(400, 0))
         multipurpose_dialog.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        multipurpose_dialog.setStyleSheet("QWidget{\n"
-"    color: rgb(221, 221, 221);\n"
-"}\n"
-"\n"
-"/* Content App */\n"
-"#content_top_bg{    \n"
-"    background-color: rgb(33, 37, 43);\n"
-"}\n"
-"\n"
-"/* Top Buttons */\n"
-"#right_buttons .QPushButton { background-color: rgba(255, 255, 255, 0); border: none;  border-radius: 5px; }\n"
-"#right_buttons .QPushButton:hover { background-color: rgb(44, 49, 57); border-style: solid; border-radius: 4px; }\n"
-"#right_buttons .QPushButton:pressed { background-color: rgb(23, 26, 30); border-style: solid; border-radius: 4px; }\n"
-"")
+        multipurpose_dialog.setStyleSheet(
+            "QWidget{\n"
+            "    color: rgb(221, 221, 221);\n"
+            "}\n"
+            "\n"
+            "/* Content App */\n"
+            "#content_top_bg{    \n"
+            "    background-color: rgb(33, 37, 43);\n"
+            "}\n"
+            "\n"
+            "/* Top Buttons */\n"
+            "#right_buttons .QPushButton { background-color: rgba(255, 255, 255, 0); border: none;  border-radius: 5px; }\n"
+            "#right_buttons .QPushButton:hover { background-color: rgb(44, 49, 57); border-style: solid; border-radius: 4px; }\n"
+            "#right_buttons .QPushButton:pressed { background-color: rgb(23, 26, 30); border-style: solid; border-radius: 4px; }\n"
+            ""
+        )
         self.content_box = QtWidgets.QFrame(parent=multipurpose_dialog)
         self.content_box.setGeometry(QtCore.QRect(0, 50, 400, 251))
         self.content_box.setMinimumSize(QtCore.QSize(400, 0))
@@ -40,7 +42,9 @@ class Ui_multipurpose_dialog(object):
         self.content_box_layout.setObjectName("content_box_layout")
         self.content_box_horizontal_layout = QtWidgets.QHBoxLayout()
         self.content_box_horizontal_layout.setContentsMargins(-1, -1, -1, 0)
-        self.content_box_horizontal_layout.setObjectName("content_box_horizontal_layout")
+        self.content_box_horizontal_layout.setObjectName(
+            "content_box_horizontal_layout"
+        )
         self.icon_severity = QtWidgets.QLabel(parent=self.content_box)
         self.icon_severity.setMaximumSize(QtCore.QSize(42, 42))
         self.icon_severity.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
@@ -52,19 +56,32 @@ class Ui_multipurpose_dialog(object):
         self.text_box.setObjectName("text_box")
         self.message = QtWidgets.QLabel(parent=self.content_box)
         self.message.setStyleSheet("font-size: 13px;")
-        self.message.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignTop)
+        self.message.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignLeading
+            | QtCore.Qt.AlignmentFlag.AlignLeft
+            | QtCore.Qt.AlignmentFlag.AlignTop
+        )
         self.message.setWordWrap(True)
         self.message.setObjectName("message")
         self.text_box.addWidget(self.message)
         self.details = QtWidgets.QLabel(parent=self.content_box)
         self.details.setStyleSheet("font-size: 11px;")
-        self.details.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignTop)
+        self.details.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignLeading
+            | QtCore.Qt.AlignmentFlag.AlignLeft
+            | QtCore.Qt.AlignmentFlag.AlignTop
+        )
         self.details.setWordWrap(True)
         self.details.setObjectName("details")
         self.text_box.addWidget(self.details)
         self.content_box_horizontal_layout.addLayout(self.text_box)
         self.content_box_layout.addLayout(self.content_box_horizontal_layout)
-        spacerItem = QtWidgets.QSpacerItem(20, 5, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20,
+            5,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+        )
         self.content_box_layout.addItem(spacerItem)
         self.progress_bar_layout = QtWidgets.QVBoxLayout()
         self.progress_bar_layout.setContentsMargins(-1, -1, -1, 0)
@@ -72,18 +89,20 @@ class Ui_multipurpose_dialog(object):
         self.progress_bar = QtWidgets.QProgressBar(parent=self.content_box)
         self.progress_bar.setMinimumSize(QtCore.QSize(200, 0))
         self.progress_bar.setMaximumSize(QtCore.QSize(16777215, 20))
-        self.progress_bar.setStyleSheet("QProgressBar\n"
-"{\n"
-"    color: #ffffff;\n"
-"    border-style: outset;\n"
-"border-width: 2px;\n"
-"    border-radius: 5px;\n"
-"    text-align: left;\n"
-"}\n"
-"QProgressBar::chunk\n"
-"{\n"
-"    background-color:#e06133;\n"
-"}")
+        self.progress_bar.setStyleSheet(
+            "QProgressBar\n"
+            "{\n"
+            "    color: #ffffff;\n"
+            "    border-style: outset;\n"
+            "border-width: 2px;\n"
+            "    border-radius: 5px;\n"
+            "    text-align: left;\n"
+            "}\n"
+            "QProgressBar::chunk\n"
+            "{\n"
+            "    background-color:#e06133;\n"
+            "}"
+        )
         self.progress_bar.setProperty("value", 24)
         self.progress_bar.setObjectName("progress_bar")
         self.progress_bar_layout.addWidget(self.progress_bar)
@@ -94,23 +113,39 @@ class Ui_multipurpose_dialog(object):
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout(self.navigation_buttons)
         self.horizontalLayout_6.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.horizontalLayout_6.addItem(spacerItem1)
         self.left_button = QtWidgets.QPushButton(parent=self.navigation_buttons)
         self.left_button.setEnabled(True)
         self.left_button.setMinimumSize(QtCore.QSize(80, 30))
-        self.left_button.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.left_button.setCursor(
+            QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+        )
         self.left_button.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         self.left_button.setObjectName("left_button")
         self.horizontalLayout_6.addWidget(self.left_button)
-        spacerItem2 = QtWidgets.QSpacerItem(5, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            5,
+            20,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.horizontalLayout_6.addItem(spacerItem2)
         self.right_button = QtWidgets.QPushButton(parent=self.navigation_buttons)
         self.right_button.setEnabled(True)
         self.right_button.setMinimumSize(QtCore.QSize(80, 30))
-        self.right_button.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.right_button.setCursor(
+            QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+        )
         self.right_button.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.right_button.setStyleSheet(":disabled {background-color: rgb(52, 59, 72); color: rgba(255, 255, 255, 10%) }")
+        self.right_button.setStyleSheet(
+            ":disabled {background-color: rgb(52, 59, 72); color: rgba(255, 255, 255, 10%) }"
+        )
         self.right_button.setObjectName("right_button")
         self.horizontalLayout_6.addWidget(self.right_button)
         self.content_box_layout.addWidget(self.navigation_buttons)
@@ -126,7 +161,10 @@ class Ui_multipurpose_dialog(object):
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.left_box = QtWidgets.QFrame(parent=self.content_top_bg)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Preferred,
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.left_box.sizePolicy().hasHeightForWidth())
@@ -154,14 +192,23 @@ class Ui_multipurpose_dialog(object):
         self.horizontalLayout_8.addWidget(self.top_logo)
         self.horizontalLayout_3.addWidget(self.logo_container)
         self.title_right_info = QtWidgets.QLabel(parent=self.left_box)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Preferred,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.title_right_info.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.title_right_info.sizePolicy().hasHeightForWidth()
+        )
         self.title_right_info.setSizePolicy(sizePolicy)
         self.title_right_info.setMaximumSize(QtCore.QSize(16777215, 45))
         self.title_right_info.setStyleSheet("font: 12pt;")
-        self.title_right_info.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.title_right_info.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignLeading
+            | QtCore.Qt.AlignmentFlag.AlignLeft
+            | QtCore.Qt.AlignmentFlag.AlignVCenter
+        )
         self.title_right_info.setObjectName("title_right_info")
         self.horizontalLayout_3.addWidget(self.title_right_info)
         self.horizontalLayout.addWidget(self.left_box)
@@ -177,12 +224,16 @@ class Ui_multipurpose_dialog(object):
         self.close_button = QtWidgets.QPushButton(parent=self.right_buttons)
         self.close_button.setMinimumSize(QtCore.QSize(28, 28))
         self.close_button.setMaximumSize(QtCore.QSize(28, 28))
-        self.close_button.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.close_button.setCursor(
+            QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+        )
         self.close_button.setToolTip("")
         self.close_button.setIconSize(QtCore.QSize(20, 20))
         self.close_button.setObjectName("close_button")
         self.horizontalLayout_2.addWidget(self.close_button)
-        self.horizontalLayout.addWidget(self.right_buttons, 0, QtCore.Qt.AlignmentFlag.AlignRight)
+        self.horizontalLayout.addWidget(
+            self.right_buttons, 0, QtCore.Qt.AlignmentFlag.AlignRight
+        )
 
         self.retranslateUi(multipurpose_dialog)
         QtCore.QMetaObject.connectSlotsByName(multipurpose_dialog)
@@ -190,8 +241,12 @@ class Ui_multipurpose_dialog(object):
     def retranslateUi(self, multipurpose_dialog):
         _translate = QtCore.QCoreApplication.translate
         multipurpose_dialog.setWindowTitle(_translate("multipurpose_dialog", "Dialog"))
-        self.message.setText(_translate("multipurpose_dialog", "Lorem ipsum dolor sit amet"))
-        self.details.setText(_translate("multipurpose_dialog", "Lorem ipsum dolor sit amet"))
+        self.message.setText(
+            _translate("multipurpose_dialog", "Lorem ipsum dolor sit amet")
+        )
+        self.details.setText(
+            _translate("multipurpose_dialog", "Lorem ipsum dolor sit amet")
+        )
         self.left_button.setText(_translate("multipurpose_dialog", "Left"))
         self.right_button.setText(_translate("multipurpose_dialog", "Right"))
         self.title_right_info.setText(_translate("multipurpose_dialog", "TITLE"))

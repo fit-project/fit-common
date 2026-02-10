@@ -5,6 +5,7 @@ description = "Shared code between modules of the FIT project"
 authors = ["Fit Project <info@fit-project.org>"]
 
 packages = [{ include = "fit_common" }]
+exclude = ["fit_common/ui/**"]
 
 include = [
     "fit_assets/icons/info-circle.png",
