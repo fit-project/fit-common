@@ -260,10 +260,13 @@ class PdfReportBuilder:
                 ("headers.txt", self.__translations["TABLE_ROW_DESCRIPTION_HEADERS"]),
                 ("nslookup.txt", self.__translations["TABLE_ROW_DESCRIPTION_NSLOOKUP"]),
                 ("server.cer", self.__translations["TABLE_ROW_DESCRIPTION_CER"]),
-                ("sslkey.log", self.__translations["TABLE_ROW_DESCRIPTION_SSLKEY"]),
+                (
+                    "sslkey.log",
+                    self.__translations["TABLE_ROW_DESCRIPTION_SSLKEYLOG"],
+                ),
                 (
                     "traceroute.txt",
-                    self.__translations["TABLE_ROW_TRACEROUTE_DESCRIPTION"],
+                    self.__translations["TABLE_ROW_DESCRIPTION_TRACEROUTE"],
                 ),
             ]
 
