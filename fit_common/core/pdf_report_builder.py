@@ -99,9 +99,9 @@ class PdfReportBuilder:
 
         front_page_html = template.render(
             img=f"data:image/png;base64,{logo_base64}",
-            t1=self.__translations["T1"],
-            title=self.__translations["TITLE"],
-            report=self.__translations["REPORT"],
+            document_title=self.__translations["DOCUMENT_TITLE"],
+            document_subtitle=self.__translations["DOCUMENT_SUBTITLE"],
+            application_short_name=self.__translations["APPLICATION_SHORT_NAME"],
             version=get_version(),
         )
 
@@ -110,11 +110,11 @@ class PdfReportBuilder:
         # FIT Description
         sections.append(
             {
-                "title": self.__translations["T1"],
+                "title": self.__translations["DOCUMENT_TITLE"],
                 "type": "fit_description",
-                "content": self.__translations["DESCRIPTION"].format(
-                    self.__translations["RELEASES_LINK"]
-                ),
+                "content": self.__translations[
+                    "SECTION_DESCRIPTION_FIT_APPLICATION"
+                ].format(self.__translations["RELEASES_LINK"]),
             }
         )
 
@@ -122,16 +122,22 @@ class PdfReportBuilder:
             # Digital Forensics
             sections.append(
                 {
-                    "title": self.__translations["T4"],
+                    "title": self.__translations["SECTION_TITLE_DIGITAL_FORENSICS"],
                     "type": "digital_forensics",
-                    "description": self.__translations["T4DESCR"],
+                    "description": self.__translations[
+                        "SECTION_DESCRIPTION_DIGITAL_FORENSICS"
+                    ],
                     "subtitles": {
-                        "cc": self.__translations["TITLECC"],
-                        "h": self.__translations["TITLEH"],
+                        "chain_of_custody": self.__translations[
+                            "SECTION_TITLE_CHAIN_OF_CUSTODY"
+                        ],
+                        "hashes": self.__translations["SECTION_TITLE_HASHES"],
                     },
                     "contents": {
-                        "cc": self.__translations["CCDESCR"],
-                        "h": self.__translations["HDESCR"],
+                        "chain_of_custody": self.__translations[
+                            "SECTION_DESCRIPTION_CHAIN_OF_CUSTODY"
+                        ],
+                        "hashes": self.__translations["SECTION_DESCRIPTION_HASHES"],
                     },
                 }
             )
@@ -140,37 +146,37 @@ class PdfReportBuilder:
             # Format of the acquired web content (WACZ)
             sections.append(
                 {
-                    "title": self.__translations["WACZ_TITLE"],
+                    "title": self.__translations["SECTION_TITLE_WACZ"],
                     "type": "wacz_description",
-                    "content": self.__translations["WACZ_DESCRIPTION"],
+                    "content": self.__translations["SECTION_DESCRIPTION_WACZ"],
                 }
             )
 
         # Case Information
         case_rows = [
             {
-                "value": self.__translations["CASE"],
+                "value": self.__translations["TABLE_ROW_LABEL_CASE"],
                 "desc": self.__safe_text(self.__case_info.get("name")) or "N/A",
             },
             {
-                "value": self.__translations["LAWYER"],
+                "value": self.__translations["TABLE_ROW_LABEL_LAWYER"],
                 "desc": self.__safe_text(self.__case_info.get("lawyer_name")) or "N/A",
             },
             {
-                "value": self.__translations["OPERATOR"],
+                "value": self.__translations["TABLE_ROW_LABEL_OPERATOR"],
                 "desc": self.__safe_text(self.__case_info.get("operator")) or "N/A",
             },
             {
-                "value": self.__translations["PROCEEDING"],
+                "value": self.__translations["TABLE_ROW_LABEL_PROCEEDING"],
                 "desc": self.__safe_text(self.__case_info.get("proceeding_type_name"))
                 or "N/A",
             },
             {
-                "value": self.__translations["COURT"],
+                "value": self.__translations["TABLE_ROW_LABEL_COURT"],
                 "desc": self.__safe_text(self.__case_info.get("courthouse")) or "N/A",
             },
             {
-                "value": self.__translations["NUMBER"],
+                "value": self.__translations["TABLE_ROW_LABEL_PROCEEDING_NUMBER"],
                 "desc": self.__safe_text(self.__case_info.get("proceeding_number"))
                 or "N/A",
             },
@@ -189,12 +195,12 @@ class PdfReportBuilder:
         )
         sections.append(
             {
-                "title": self.__translations["T2"],
+                "title": self.__translations["SECTION_TITLE_GENERAL_INFORMATION"],
                 "type": "case_info",
                 "description": "",
                 "columns": [
-                    self.__translations["CASEINFO"],
-                    self.__translations["CASEDATA"],
+                    self.__translations["TABLE_COLUMN_CASE_INFO"],
+                    self.__translations["TABLE_COLUMN_CASE_DATA"],
                 ],
                 "rows": case_rows,
                 "note": self.__safe_text(self.__case_info.get("notes")) or "N/A",
@@ -217,27 +223,57 @@ class PdfReportBuilder:
             logo = "<div></div>"
 
         if self.__report_type == ReportType.ACQUISITION:
-            # Acquisition Files
+            # System artifacts
             acquisition_files = self._acquisition_files_names()
             file_checks = [
                 (
-                    self.__screen_recorder_filename,
-                    self.__translations["AVID"],
+                    "acquisition_report.pdf",
+                    self.__translations["TABLE_ROW_DESCRIPTION_REPORT"],
                 ),
-                ("acquisition.hash", self.__translations["HASHD"]),
-                ("acquisition.log", self.__translations["LOGD"]),
+                (
+                    self.__screen_recorder_filename,
+                    self.__translations["TABLE_ROW_DESCRIPTION_SCREEN_CAPTURE"],
+                ),
+                ("acquisition.hash", self.__translations["TABLE_ROW_DESCRIPTION_HASH"]),
+                ("acquisition.log", self.__translations["TABLE_ROW_DESCRIPTION_LOG"]),
                 (
                     self.__packet_capture_filename,
-                    self.__translations["PCAPD"],
+                    self.__translations["TABLE_ROW_DESCRIPTION_PCAP"],
                 ),
-                ("acquisition.zip", self.__translations["ZIPD"]),
-                ("whois.txt", self.__translations["WHOISD"]),
-                ("headers.txt", self.__translations["HEADERSD"]),
-                ("nslookup.txt", self.__translations["NSLOOKUPD"]),
-                ("server.cer", self.__translations["CERD"]),
-                ("sslkey.log", self.__translations["SSLKEYD"]),
-                ("traceroute.txt", self.__translations["TRACEROUTED"]),
+                (
+                    "caseinfo.json",
+                    self.__translations["TABLE_ROW_DESCRIPTION_CASE_INFORMATION"],
+                ),
+                (
+                    "system_info.txt",
+                    self.__translations["TABLE_ROW_DESCRIPTION_SYSTEM_INFORMATION"],
+                ),
+                (
+                    "timestamp.tsr",
+                    self.__translations["TABLE_ROW_DESCRIPTION_TIMESTAMP_TSR"],
+                ),
+                (
+                    "tsa.crt",
+                    self.__translations["TABLE_ROW_DESCRIPTION_TSA_CERTIFICATE"],
+                ),
+                ("whois.txt", self.__translations["TABLE_ROW_DESCRIPTION_WHOIS"]),
+                ("headers.txt", self.__translations["TABLE_ROW_DESCRIPTION_HEADERS"]),
+                ("nslookup.txt", self.__translations["TABLE_ROW_DESCRIPTION_NSLOOKUP"]),
+                ("server.cer", self.__translations["TABLE_ROW_DESCRIPTION_CER"]),
+                ("sslkey.log", self.__translations["TABLE_ROW_DESCRIPTION_SSLKEY"]),
+                (
+                    "traceroute.txt",
+                    self.__translations["TABLE_ROW_TRACEROUTE_DESCRIPTION"],
+                ),
             ]
+
+            if self.__eml_filename is not None:
+                file_checks.append(
+                    (
+                        self.__eml_filename,
+                        self.__translations["TABLE_ROW_DESCRIPTION_PEC_EMAIL"],
+                    ),
+                )
 
             file_rows = [
                 {"value": acquisition_files[file], "desc": desc}
@@ -247,38 +283,82 @@ class PdfReportBuilder:
 
             sections.append(
                 {
-                    "title": self.__translations["T5"],
-                    "type": "file_info",
-                    "description": self.__translations["T5DESCR"],
+                    "title": self.__translations["SECTION_TITLE_SYSTEM_ARTIFACTS"],
+                    "type": "system_artifacts",
+                    "description": self.__translations[
+                        "SECTION_DESCRIPTION_SYSTEM_ARTIFACTS"
+                    ],
                     "columns": [
-                        self.__translations["NAME"],
-                        self.__translations["DESCR"],
+                        self.__translations["TABLE_COLUMN_FILE_NAME"],
+                        self.__translations["TABLE_COLUMN_FILE_DESCRIPTION"],
                     ],
                     "rows": file_rows,
                     "note": "",
                 }
             )
 
-            # ZIP Content
-            zip_enum = self._zip_files_enum()
-            if zip_enum:
-                sections.append(
-                    {
-                        "title": self.__translations["T7"],
-                        "type": "zip_content",
-                        "description": self.__translations["T7DESCR"],
-                        "content": zip_enum,
-                    }
-                )
+            # Acquired Content
+            acquisition_files = self._acquisition_files_names()
+            file_checks = [
+                (
+                    "acquisition_page.png",
+                    self.__translations["TABLE_ROW_DESCRIPTION_PAGE_SCREENSHOT"],
+                ),
+                (
+                    "acquisition_page.wacz",
+                    self.__translations["TABLE_ROW_DESCRIPTION_WACZ"],
+                ),
+                (
+                    "acquisition_mail.zip",
+                    self.__translations["TABLE_ROW_DESCRIPTION_MAIL_ACQUISITION"],
+                ),
+                (
+                    "acquisition.zip",
+                    self.__translations["TABLE_ROW_DESCRIPTION_ACQUISITION_ARCHIVE"],
+                ),
+                (
+                    "screenshot.zip",
+                    self.__translations["TABLE_ROW_DESCRIPTION_SCREENSHOTS_ARCHIVE"],
+                ),
+                (
+                    "downloads.zip",
+                    self.__translations["TABLE_ROW_DESCRIPTION_DOWNLOADS_ARCHIVE"],
+                ),
+            ]
+            file_rows = [
+                {"value": acquisition_files[file], "desc": desc}
+                for file, desc in file_checks
+                if file in acquisition_files and acquisition_files[file]
+            ]
+
+            sections.append(
+                {
+                    "title": self.__translations["SECTION_TITLE_ACQUIRED_CONTENT"],
+                    "type": "acquired_content",
+                    "description": self.__translations[
+                        "SECTION_DESCRIPTION_ACQUIRED_CONTENT"
+                    ],
+                    "columns": [
+                        self.__translations["TABLE_COLUMN_FILE_NAME"],
+                        self.__translations["TABLE_COLUMN_FILE_DESCRIPTION"],
+                    ],
+                    "rows": file_rows,
+                    "note": "",
+                }
+            )
 
             # hash
             hash_content = self.__hash_reader()
             if hash_content:
                 sections.append(
                     {
-                        "title": self.__translations["T6"],
-                        "type": "hash",
-                        "description": self.__translations["T6DESCR"],
+                        "title": self.__translations[
+                            "SECTION_TITLE_INTEGRITY_VERIFICATION"
+                        ],
+                        "type": "integrity_verification",
+                        "description": self.__translations[
+                            "SECTION_DESCRIPTION_INTEGRITY_VERIFICATION"
+                        ],
                         "content": hash_content,
                     }
                 )
@@ -288,9 +368,13 @@ class PdfReportBuilder:
             if whois_content:
                 sections.append(
                     {
-                        "title": self.__translations["T3"],
+                        "title": self.__translations[
+                            "SECTION_TITLE_DATA_OWNERSHIP_VERIFICATION"
+                        ],
                         "type": "whois",
-                        "description": self.__translations["T3DESCR"],
+                        "description": self.__translations[
+                            "SECTION_DESCRIPTION_DATA_OWNERSHIP_VERIFICATION"
+                        ],
                         "content": whois_content,
                     }
                 )
@@ -300,9 +384,11 @@ class PdfReportBuilder:
             if screenshot_content:
                 sections.append(
                     {
-                        "title": self.__translations["T8"],
+                        "title": self.__translations["SECTION_TITLE_SCREENSHOTS"],
                         "type": "screenshot",
-                        "description": self.__translations["T8DESCR"],
+                        "description": self.__translations[
+                            "SECTION_DESCRIPTION_SCREENSHOTS"
+                        ],
                         "content": screenshot_content,
                     }
                 )
@@ -312,9 +398,11 @@ class PdfReportBuilder:
             if video_content:
                 sections.append(
                     {
-                        "title": self.__translations["T9"],
+                        "title": self.__translations["SECTION_TITLE_VIDEO_ACQUISITION"],
                         "type": "video",
-                        "description": self.__translations["T9DESCR"],
+                        "description": self.__translations[
+                            "SECTION_DESCRIPTION_VIDEO_ACQUISITION"
+                        ],
                         "content": video_content,
                     }
                 )
@@ -335,7 +423,7 @@ class PdfReportBuilder:
 
             sections.append(
                 {
-                    "title": self.__translations["VERIFICATION"],
+                    "title": self.__translations["SECTION_TITLE_VERIFICATION"],
                     "type": "verification_report",
                     "verification_result": verification_result,
                     "content": info_file,
@@ -347,8 +435,8 @@ class PdfReportBuilder:
         )
 
         content_page_html = template.render(
-            title=self.__translations["TITLE"],
-            t1=self.__translations["T1"],
+            title=self.__translations["APPLICATION_SHORT_NAME"],
+            document_title=self.__translations["DOCUMENT_TITLE"],
             index=self.__translations["INDEX"],
             sections=sections,
             note=self.__translations["NOTE"],
@@ -419,6 +507,16 @@ class PdfReportBuilder:
     def __force_wrap(self, text, every=80):
         return "\n".join(text[i : i + every] for i in range(0, len(text), every))
 
+    def __pec_eml_filename(self):
+        if not self.__path or not os.path.isdir(self.__path):
+            return None
+
+        for entry in os.scandir(self.__path):
+            if entry.is_file() and entry.name.lower().endswith(".eml"):
+                return entry.name
+
+        return None
+
     def _acquisition_files_names(self):
         acquisition_files = {}
         files = [f.name for f in os.scandir(self.__path) if f.is_file()]
@@ -426,17 +524,27 @@ class PdfReportBuilder:
             acquisition_files[file] = file
 
         file_checks = [
+            "acquisition_page.png",
+            "acquisition_page.wacz",
+            "acquisition_mail.zip",
+            "acquisition_report.pdf",
             self.__screen_recorder_filename,
             "acquisition.hash",
             "acquisition.log",
-            self.__packet_capture_filename,
             "acquisition.zip",
-            "whois.txt",
+            self.__packet_capture_filename,
+            "caseinfo.json",
             "headers.txt",
             "nslookup.txt",
+            "screenshot.zip",
+            "downloads.zip",
             "server.cer",
+            "system_info.txt",
+            "timestamp.tsr",
             "sslkey.log",
             "traceroute.txt",
+            "tsa.crt",
+            "whois.txt",
         ]
 
         for filename in file_checks:
@@ -452,6 +560,10 @@ class PdfReportBuilder:
                     acquisition_files[actual_file] = self.__translations[
                         "EMPTY_FILE"
                     ].format(actual_file)
+
+        self.__eml_filename = self.__pec_eml_filename()
+        if self.__eml_filename is not None:
+            acquisition_files[self.__eml_filename] = self.__eml_filename
 
         return acquisition_files
 
@@ -549,7 +661,7 @@ class PdfReportBuilder:
                 '<a href="file://'
                 + main_screenshot_file
                 + '">'
-                + self.__translations["COMPLETE_SCREENSHOT"]
+                + self.__translations["SCREENSHOT_LINK_LABEL"]
                 + '</a><br><img src="'
                 + main_screenshot
                 + '"></p>'
@@ -575,7 +687,7 @@ class PdfReportBuilder:
                 '<a href="file://'
                 + os.path.join(self.__path, actual_filename)
                 + '">'
-                + self.__translations["VIDEO_LINK"]
+                + self.__translations["VIDEO_LINK_LABEL"]
                 + "</a>"
             )
         else:
