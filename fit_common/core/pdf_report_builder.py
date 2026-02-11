@@ -387,7 +387,10 @@ class PdfReportBuilder:
             if screenshot_content:
                 sections.append(
                     {
-                        "title": self.__translations["SECTION_TITLE_SCREENSHOTS"],
+                        "title": self.__translations.get(
+                            "SCREENSHOT_LINK_LABEL",
+                            self.__translations["SECTION_TITLE_SCREENSHOTS"],
+                        ),
                         "type": "screenshot",
                         "description": self.__translations[
                             "SECTION_DESCRIPTION_SCREENSHOTS"
@@ -618,59 +621,62 @@ class PdfReportBuilder:
         return hash_text
 
     def __insert_screenshot(self):
-        screenshot_text = ""
-        main_screenshot = ""
-        screenshots_path = os.path.join(self.__path, "screenshot")
-        full_screenshot_path = os.path.join(self.__path, "screenshot", "full_page")
+        screenshot_path = os.path.join(self.__path, "acquisition_page.png")
+        if not os.path.isfile(screenshot_path):
+            return ""
 
-        if os.path.isdir(screenshots_path):
-            main_screenshot_file = os.path.join(self.__path, "screenshot.png")
+        # A4 portrait content area with current margins is about 445pt x 692pt.
+        # Keep extra room for title/description so the screenshot fits on one page.
+        max_width = 430
+        max_height = 520
+        width, height = self.__read_png_dimensions(screenshot_path)
+        img_attributes = 'style="display:block; margin: 0 auto;"'
 
-            if os.path.isdir(full_screenshot_path):
-                url_folder = [
-                    file
-                    for file in os.listdir(full_screenshot_path)
-                    if os.path.isdir(os.path.join(full_screenshot_path, file))
-                ]
-
-                if url_folder:
-                    full_screenshot_path = os.path.join(
-                        full_screenshot_path, url_folder[0]
-                    )
-
-                images = os.listdir(full_screenshot_path)
-                main_screenshot = os.path.join(full_screenshot_path, images[0])
-
-            files = os.listdir(screenshots_path)
-            for file in files:
-                path = os.path.join(self.__path, "screenshot", file)
-                if os.path.isfile(path):
-                    if "full_page_" not in os.path.basename(file):
-                        screenshot_text += (
-                            "<p>"
-                            '<a href="file://'
-                            + path
-                            + '">'
-                            + "Screenshot"
-                            + os.path.basename(file)
-                            + '</a><br><img src="'
-                            + path
-                            + '"></p><br><br>'
-                        )
-
-            # main full page screenshot
-            screenshot_text += (
-                "<p>"
-                '<a href="file://'
-                + main_screenshot_file
-                + '">'
-                + self.__translations["SCREENSHOT_LINK_LABEL"]
-                + '</a><br><img src="'
-                + main_screenshot
-                + '"></p>'
+        if width and height and width > 0 and height > 0:
+            scale = min(max_width / width, max_height / height, 1)
+            render_width = max(1, int(width * scale))
+            render_height = max(1, int(height * scale))
+            img_attributes = (
+                f'width="{render_width}" height="{render_height}" '
+                'style="display:block; margin: 0 auto;"'
+            )
+        else:
+            img_attributes = (
+                f'width="{max_width}" height="{max_height}" '
+                'style="display:block; margin: 0 auto;"'
             )
 
-        return screenshot_text
+        return (
+            "<p>"
+            '<a href="file://'
+            + screenshot_path
+            + '">'
+            + self.__translations["SCREENSHOT_LINK_LABEL"]
+            + '</a></p><p><img src="'
+            + screenshot_path
+            + '" '
+            + img_attributes
+            + "></p>"
+        )
+
+    @staticmethod
+    def __read_png_dimensions(path):
+        try:
+            with open(path, "rb") as f:
+                header = f.read(24)
+        except OSError:
+            return None, None
+
+        if len(header) < 24:
+            return None, None
+        if header[:8] != b"\x89PNG\r\n\x1a\n":
+            return None, None
+        if header[12:16] != b"IHDR":
+            return None, None
+
+        width = int.from_bytes(header[16:20], "big")
+        height = int.from_bytes(header[20:24], "big")
+        return width, height
 
     def __insert_video_hyperlink(self):
         acquisition_files = {}
