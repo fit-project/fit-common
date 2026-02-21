@@ -47,7 +47,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcairo2-dev pkg-config
+          sudo apt-get install -y libcairo2-dev pkg-config libegl1 libpulse0 libgl1 libopengl0
 
       - name: Verify cairo toolchain
         run: |
@@ -64,4 +64,4 @@ jobs:
 
       - name: Run integration tests
         run: |
-          pytest -m integration -q tests
+          pytest -m integration -q tests/integration
