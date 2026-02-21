@@ -26,18 +26,16 @@ requests = "^2.32.4"
 jinja2 = "^3.1.6"
 pypdf = "^6.1.1"
 xhtml2pdf = "^0.2.17"
-pytest = "^9.0.2"
-ruff = "^0.15.2"
-mypy = "^1.19.1"
-bandit = {extras = ["toml"], version = "^1.9.3"}
-pip-audit = "^2.10.0"
 cryptography = ">=46.0.5"
 pillow = ">=12.1.1"
 
 [tool.pytest.ini_options]
+addopts = "--strict-markers"
 markers = [
+    "unit: fast isolated tests",
     "contract: cross-module contract tests for public interfaces and integrations",
     "integration: integration tests with real external resources and dependencies",
+    "e2e: end-to-end UI workflow tests",
 ]
 
 [tool.ruff]

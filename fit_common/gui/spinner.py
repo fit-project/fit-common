@@ -33,16 +33,17 @@ class Spinner(QObject):
         self.__translations = load_translations()
 
         self._overlay = QWidget(parent)
-        self._overlay.setAttribute(Qt.WA_StyledBackground, True)
+        self._overlay.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self._overlay.setStyleSheet(f"background-color: rgba(255,255,255,{opacity});")
         self._overlay.hide()
 
         self._label = QLabel(self._overlay)
-        self._label.setAlignment(Qt.AlignCenter)
+        self._label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self._movie = None
-        if os.path.exists(self._gif_path):
-            self._movie = QMovie(str(self._gif_path))
+        gif_path = str(self._gif_path)
+        if os.path.exists(gif_path):
+            self._movie = QMovie(gif_path)
             self._label.setMovie(self._movie)
         else:
             self._label.setText(self.__translations["LOADING"])
@@ -83,6 +84,9 @@ class Spinner(QObject):
         self._label.setGeometry(self._overlay.rect())
 
     def eventFilter(self, watched: QObject, event: QEvent) -> bool:
-        if watched is self._parent and event.type() in (QEvent.Resize, QEvent.Show):
+        if watched is self._parent and event.type() in (
+            QEvent.Type.Resize,
+            QEvent.Type.Show,
+        ):
             self._sync_geometry()
         return super().eventFilter(watched, event)

@@ -9,7 +9,7 @@
 
 import webbrowser
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QEnterEvent, QMouseEvent
 from PySide6.QtWidgets import QLabel, QWidget
 
@@ -31,6 +31,6 @@ class ClickableLabel(QLabel):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         super().enterEvent(event)
 
-    def leaveEvent(self, event: QEnterEvent) -> None:
+    def leaveEvent(self, event: QEvent) -> None:
         self.setStyleSheet("text-decoration: none;")
         super().leaveEvent(event)

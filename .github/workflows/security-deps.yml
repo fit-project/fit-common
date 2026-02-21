@@ -28,8 +28,11 @@ jobs:
       - name: Install package and pip-audit
         run: |
           python -m pip install --upgrade pip
-          pip install . pip-audit
+          python -m pip install "setuptools>=78.1.1"
+          python -m pip install "wheel>=0.46.2"
+          python -m pip install . pip-audit
 
       - name: Run pip-audit
         run: |
-          pip-audit --progress-spinner off
+          PIPAPI_PYTHON_LOCATION="$(python -c 'import sys; print(sys.executable)')" \
+            python -m pip_audit --progress-spinner off

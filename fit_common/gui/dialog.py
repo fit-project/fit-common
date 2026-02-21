@@ -71,21 +71,25 @@ class Dialog(QtWidgets.QDialog, Ui_multipurpose_dialog):
         self, severity: QtWidgets.QMessageBox.Icon | None
     ) -> None:
         if severity is not None:
-            icon = None
+            standard_pixmap: QtWidgets.QStyle.StandardPixmap | None = None
             if severity == QtWidgets.QMessageBox.Icon.Warning:
-                icon = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxWarning
+                standard_pixmap = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxWarning
             elif severity == QtWidgets.QMessageBox.Icon.Information:
-                icon = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxInformation
-            elif severity == QtWidgets.QMessageBox.Icon.Question:
-                icon = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxQuestion
-            elif severity == QtWidgets.QMessageBox.Icon.Critical:
-                icon = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxCritical
-
-            if icon is not None:
-                icon = self.style().standardIcon(icon)
-                self.icon_severity.setPixmap(
-                    icon.pixmap(icon.actualSize(QtCore.QSize(42, 42)))
+                standard_pixmap = (
+                    QtWidgets.QStyle.StandardPixmap.SP_MessageBoxInformation
                 )
+            elif severity == QtWidgets.QMessageBox.Icon.Question:
+                standard_pixmap = (
+                    QtWidgets.QStyle.StandardPixmap.SP_MessageBoxQuestion
+                )
+            elif severity == QtWidgets.QMessageBox.Icon.Critical:
+                standard_pixmap = (
+                    QtWidgets.QStyle.StandardPixmap.SP_MessageBoxCritical
+                )
+
+            if standard_pixmap is not None:
+                icon = self.style().standardIcon(standard_pixmap)
+                self.icon_severity.setPixmap(icon.pixmap(QtCore.QSize(42, 42)))
             else:
                 self.icon_severity.hide()
 

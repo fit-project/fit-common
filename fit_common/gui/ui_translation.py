@@ -23,7 +23,8 @@ def _traverse_widgets(
     _apply_translation(translations, widget)
 
     for child in widget.findChildren(
-        QtWidgets.QWidget, options=QtCore.Qt.FindDirectChildrenOnly
+        QtWidgets.QWidget,
+        options=QtCore.Qt.FindChildOption.FindDirectChildrenOnly,
     ):
         _traverse_widgets(translations, child)
 

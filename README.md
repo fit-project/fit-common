@@ -58,13 +58,15 @@ Run these commands before opening a PR, so failures are caught locally first.
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -U pip
+python -m pip install "setuptools>=78.1.1"
 pip install . pytest ruff mypy "bandit[toml]" pip-audit
+python -m pip install --upgrade "setuptools>=78.1.1"
 ```
 
 ### 2) Test suite
 ```bash
 # unit tests
-pytest -m "not contract and not integration" -q tests
+pytest -m unit -q tests
 
 # contract tests
 pytest -m contract -q tests
@@ -77,9 +79,10 @@ pytest -m integration -q tests
 ### 3) Quality and security checks
 ```bash
 ruff check fit_common tests
-mypy
+mypy fit_common
 bandit -c pyproject.toml -r fit_common -q -ll -ii
-pip-audit --progress-spinner off
+PIPAPI_PYTHON_LOCATION="$(python -c 'import sys; print(sys.executable)')" \
+  python -m pip_audit --progress-spinner off
 ```
 
 Note: `pip-audit` may print a skip message for `fit-common` because it is a local package and not published on PyPI.

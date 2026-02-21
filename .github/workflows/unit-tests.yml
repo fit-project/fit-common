@@ -35,4 +35,4 @@ jobs:
 
       - name: Run unit tests
         run: |
-          pytest -m "not contract and not integration" -q tests
+          pytest -m unit -q tests

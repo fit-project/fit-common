@@ -15,7 +15,6 @@ from typing import Literal
 
 from PySide6 import QtWidgets
 
-from fit_common.core.utils import get_platform
 from fit_common.gui.dialog import Dialog, DialogButtonTypes
 from fit_common.lang import load_translations
 
@@ -40,6 +39,16 @@ class State(Enum):
 
 
 translations = load_translations()
+
+
+def _open_with_default_app(path: str) -> None:
+    startfile = getattr(os, "startfile", None)
+    if callable(startfile):
+        startfile(path)
+    elif sys.platform == "darwin":
+        subprocess.call(["open", path])
+    else:
+        subprocess.call(["xdg-open", path])
 
 
 def show_dialog(
@@ -112,13 +121,7 @@ def __open_verification_report(
 
     pdf_file = os.path.join(path, filename)
 
-    platform = get_platform()
-    if platform == "win":
-        os.startfile(pdf_file)
-    elif platform == "macos":
-        subprocess.call(["open", pdf_file])
-    else:
-        subprocess.call(["xdg-open", pdf_file])
+    _open_with_default_app(pdf_file)
 
 
 def get_verification_label_text(
@@ -166,12 +169,6 @@ def show_finish_acquisition_dialog(acquisition_directory: str) -> None:
 
 
 def __open_acquisition_directory(dialog: Dialog, acquisition_directory: str) -> None:
-    platform = get_platform()
-    if platform == "win":
-        os.startfile(acquisition_directory)
-    elif platform == "macos":
-        subprocess.call(["open", acquisition_directory])
-    else:
-        subprocess.call(["xdg-open", acquisition_directory])
+    _open_with_default_app(acquisition_directory)
 
     dialog.close()
