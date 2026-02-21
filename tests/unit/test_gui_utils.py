@@ -24,7 +24,7 @@ def test_get_verification_label_text_success_and_failure():
 def test_open_verification_report_windows(monkeypatch, tmp_path):
     calls = []
     dialog = _FakeDialog()
-    monkeypatch.setattr(gui_utils, "get_platform", lambda: "win")
+    monkeypatch.setattr(gui_utils.sys, "platform", "win32")
     monkeypatch.setattr(gui_utils.os, "startfile", lambda path: calls.append(path), raising=False)
     gui_utils.__open_verification_report(
         dialog, str(tmp_path), gui_utils.VerificationTypes.TIMESTAMP
@@ -37,7 +37,7 @@ def test_open_verification_report_windows(monkeypatch, tmp_path):
 def test_open_verification_report_macos(monkeypatch, tmp_path):
     calls = []
     dialog = _FakeDialog()
-    monkeypatch.setattr(gui_utils, "get_platform", lambda: "macos")
+    monkeypatch.setattr(gui_utils.sys, "platform", "darwin")
     monkeypatch.setattr(gui_utils.subprocess, "call", lambda cmd: calls.append(cmd))
     gui_utils.__open_verification_report(
         dialog, str(tmp_path), gui_utils.VerificationTypes.PEC
@@ -50,7 +50,7 @@ def test_open_verification_report_macos(monkeypatch, tmp_path):
 def test_open_acquisition_directory_linux(monkeypatch, tmp_path):
     calls = []
     dialog = _FakeDialog()
-    monkeypatch.setattr(gui_utils, "get_platform", lambda: "lin")
+    monkeypatch.setattr(gui_utils.sys, "platform", "linux")
     monkeypatch.setattr(gui_utils.subprocess, "call", lambda cmd: calls.append(cmd))
     gui_utils.__open_acquisition_directory(dialog, str(tmp_path))
     assert dialog.closed is True

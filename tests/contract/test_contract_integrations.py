@@ -72,21 +72,30 @@ def test_has_new_release_version_contract_compares_versions_when_frozen(monkeypa
 
 @pytest.mark.contract
 def test_gui_verification_report_open_contract_windows(monkeypatch, tmp_path):
-    calls = []
+    startfile_calls = []
+    subprocess_calls = []
     dialog = _Dialog()
-    monkeypatch.setattr(gui_utils, "get_platform", lambda: "win")
-    monkeypatch.setattr(gui_utils.os, "startfile", lambda path: calls.append(path), raising=False)
+    monkeypatch.setattr(gui_utils.sys, "platform", "win32")
+    monkeypatch.setattr(
+        gui_utils.os, "startfile", lambda path: startfile_calls.append(path), raising=False
+    )
+    monkeypatch.setattr(
+        gui_utils.subprocess, "call", lambda cmd: subprocess_calls.append(cmd)
+    )
     gui_utils.__open_verification_report(dialog, str(tmp_path), gui_utils.VerificationTypes.PEC)
     assert dialog.closed is True
-    assert calls
-    assert calls[0].endswith("report_integrity_pec_verification.pdf")
+    opened = []
+    opened.extend(startfile_calls)
+    opened.extend(cmd[1] for cmd in subprocess_calls if len(cmd) > 1)
+    assert opened
+    assert opened[0].endswith("report_integrity_pec_verification.pdf")
 
 
 @pytest.mark.contract
 def test_gui_acquisition_open_contract_non_windows(monkeypatch, tmp_path):
     calls = []
     dialog = _Dialog()
-    monkeypatch.setattr(gui_utils, "get_platform", lambda: "lin")
+    monkeypatch.setattr(gui_utils.sys, "platform", "linux")
     monkeypatch.setattr(gui_utils.subprocess, "call", lambda cmd: calls.append(cmd))
     gui_utils.__open_acquisition_directory(dialog, str(tmp_path))
     assert dialog.closed is True
