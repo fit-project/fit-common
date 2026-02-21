@@ -12,6 +12,7 @@ on:
       - "tests/**"
       - "pyproject.toml"
       - "poetry.lock"
+      - ".github/actions/setup-fit-env/**"
       - ".github/workflows/security-deps.yml"
   pull_request:
     branches:
@@ -21,10 +22,11 @@ on:
       - "tests/**"
       - "pyproject.toml"
       - "poetry.lock"
+      - ".github/actions/setup-fit-env/**"
       - ".github/workflows/security-deps.yml"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -36,29 +38,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Setup environment
+        uses: ./.github/actions/setup-fit-env
         with:
           python-version: "3.11"
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libcairo2-dev pkg-config libegl1 libpulse0 libgl1 libopengl0
-
-      - name: Verify cairo toolchain
-        run: |
-          echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:${PKG_CONFIG_PATH}" >> "$GITHUB_ENV"
-          export PKG_CONFIG_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:${PKG_CONFIG_PATH}"
-          pkg-config --modversion cairo
-          pkg-config --cflags --libs cairo
-
-      - name: Install package and pip-audit
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install "setuptools>=78.1.1"
-          python -m pip install "wheel>=0.46.2"
-          python -m pip install . pip-audit
+          system-packages: "libcairo2-dev pkg-config"
+          pre-install-packages: "setuptools>=78.1.1 wheel>=0.46.2"
+          python-packages: "pip-audit"
 
       - name: Run pip-audit
         run: |
