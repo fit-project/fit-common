@@ -11,7 +11,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 
 class Ui_multipurpose_dialog(object):
-    def setupUi(self, multipurpose_dialog):
+    def setupUi(self, multipurpose_dialog: QtWidgets.QDialog) -> None:
         multipurpose_dialog.setObjectName("multipurpose_dialog")
         multipurpose_dialog.resize(400, 300)
         multipurpose_dialog.setMinimumSize(QtCore.QSize(400, 0))
@@ -238,7 +238,7 @@ class Ui_multipurpose_dialog(object):
         self.retranslateUi(multipurpose_dialog)
         QtCore.QMetaObject.connectSlotsByName(multipurpose_dialog)
 
-    def retranslateUi(self, multipurpose_dialog):
+    def retranslateUi(self, multipurpose_dialog: QtWidgets.QDialog) -> None:
         _translate = QtCore.QCoreApplication.translate
         multipurpose_dialog.setWindowTitle(_translate("multipurpose_dialog", "Dialog"))
         self.message.setText(

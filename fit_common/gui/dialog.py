@@ -22,7 +22,14 @@ class DialogButtonTypes(Enum):
 
 
 class Dialog(QtWidgets.QDialog, Ui_multipurpose_dialog):
-    def __init__(self, title, message, details=None, severity=None, parent=None):
+    def __init__(
+        self,
+        title: str,
+        message: str,
+        details: str | None = None,
+        severity: QtWidgets.QMessageBox.Icon | None = None,
+        parent: QtWidgets.QWidget | None = None,
+    ) -> None:
         super(Dialog, self).__init__(parent)
 
         # Inizializza l'interfaccia da ui_multipurpose.py
@@ -46,7 +53,7 @@ class Dialog(QtWidgets.QDialog, Ui_multipurpose_dialog):
         self.setMinimumWidth(self.content_box.width())
         self.content_top_bg.setMinimumWidth(self.content_box.width())
 
-    def set_buttons_type(self, buttons_type):
+    def set_buttons_type(self, buttons_type: DialogButtonTypes) -> None:
         if buttons_type == DialogButtonTypes.MESSAGE:
             self.__set_buttons_message()
         elif buttons_type == DialogButtonTypes.QUESTION:
@@ -54,13 +61,15 @@ class Dialog(QtWidgets.QDialog, Ui_multipurpose_dialog):
         elif buttons_type == DialogButtonTypes.NONE:
             self.__hide_buttons()
 
-    def show_progress_bar(self):
+    def show_progress_bar(self) -> None:
         self.progress_bar.show()
 
-    def __set_title(self, title):
+    def __set_title(self, title: str) -> None:
         self.title_right_info.setText(title)
 
-    def __set_icon_severity(self, severity):
+    def __set_icon_severity(
+        self, severity: QtWidgets.QMessageBox.Icon | None
+    ) -> None:
         if severity is not None:
             icon = None
             if severity == QtWidgets.QMessageBox.Icon.Warning:
@@ -83,24 +92,24 @@ class Dialog(QtWidgets.QDialog, Ui_multipurpose_dialog):
         else:
             self.icon_severity.hide()
 
-    def __set_message(self, message):
+    def __set_message(self, message: str) -> None:
         self.message.setText(message)
 
-    def __set_details(self, details):
-        self.details.setText(details)
+    def __set_details(self, details: str | None) -> None:
+        self.details.setText(details or "")
 
-    def __set_buttons_message(self):
+    def __set_buttons_message(self) -> None:
         self.close_button.hide()
         self.left_button.hide()
         self.right_button.setText(self.__translations["OK"])
 
-    def __set_buttons_question(self):
+    def __set_buttons_question(self) -> None:
         self.close_button.hide()
         self.left_button.setText(self.__translations["YES"])
         self.right_button.setText(self.__translations["NO"])
         self.left_button.show()
 
-    def __hide_buttons(self):
+    def __hide_buttons(self) -> None:
         self.close_button.hide()
         self.left_button.hide()
         self.right_button.hide()

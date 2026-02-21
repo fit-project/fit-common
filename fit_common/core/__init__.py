@@ -27,7 +27,6 @@ from .utils import (
     get_ntp_date_and_time,
     get_platform,
     get_system_lang,
-    has_new_portable_version,
     is_admin,
     is_bundled,
     is_cmd,
@@ -68,7 +67,6 @@ __all__ = [
     "is_cmd",
     "is_bundled",
     "find_free_port",
-    "has_new_portable_version",
     "get_ntp_date_and_time",
     "get_context",
     # logging

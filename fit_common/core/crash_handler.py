@@ -12,8 +12,10 @@ import sys
 import traceback
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
+from types import TracebackType
 from typing import Callable, Optional
 
+from fit_common.core.debug import debug
 from fit_common.core.paths import resolve_log_path
 
 LOG_PATH = resolve_log_path("fit_crash.log")
@@ -34,7 +36,7 @@ logger.addHandler(handler)
 _gui_crash_callback: Optional[Callable[[str], None]] = None
 
 
-def set_gui_crash_handler(callback: Callable[[str], None]):
+def set_gui_crash_handler(callback: Callable[[str], None]) -> None:
     """
     Registers a GUI function to be called in case of a crash.
     Example: set_gui_crash_handler(show_crash_dialog)
@@ -43,7 +45,11 @@ def set_gui_crash_handler(callback: Callable[[str], None]):
     _gui_crash_callback = callback
 
 
-def handle_crash(exc_type, exc_value, exc_traceback):
+def handle_crash(
+    exc_type: type[BaseException],
+    exc_value: BaseException,
+    exc_traceback: TracebackType | None,
+) -> None:
     """
     Handles unhandled exceptions only in bundled mode.
     """
@@ -65,7 +71,11 @@ def handle_crash(exc_type, exc_value, exc_traceback):
         try:
             _gui_crash_callback(log_entry)
         except Exception as gui_error:
-            logger.error("Failed to show GUI crash dialog: %s", gui_error)
+            debug(
+                "Failed to show GUI crash dialog:",
+                gui_error,
+                context="crash_handler.handle_crash",
+            )
 
 
 # Register the handler only in bundle mode

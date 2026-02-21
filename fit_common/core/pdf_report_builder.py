@@ -14,6 +14,7 @@ import tempfile
 import zipfile
 from enum import Enum, auto
 from importlib.resources import files
+from typing import Mapping
 
 from jinja2 import Template
 from pypdf import PdfReader, PdfWriter
@@ -31,13 +32,13 @@ class PdfReportBuilder:
     def __init__(
         self,
         report_type: ReportType,
-        translations=None,
-        path=None,
-        filename=None,
-        case_info=None,
-        screen_recorder_filename=None,
-        packet_capture_filename=None,
-    ):
+        translations: Mapping[str, str] | None = None,
+        path: str | None = None,
+        filename: str | None = None,
+        case_info: Mapping[str, object] | None = None,
+        screen_recorder_filename: str | None = None,
+        packet_capture_filename: str | None = None,
+    ) -> None:
         self.__translations = translations
         self.__path = path
         self.__filename = filename
@@ -54,44 +55,44 @@ class PdfReportBuilder:
         self.__verify_info_file_path = None
 
     @property
-    def ntp(self):
+    def ntp(self) -> str | None:
         return self.__ntp
 
     @ntp.setter
-    def ntp(self, ntp):
+    def ntp(self, ntp: str | None) -> None:
         self.__ntp = ntp
 
     @property
-    def acquisition_type(self):
+    def acquisition_type(self) -> AcquisitionType | None:
         return self.__acquisition_type
 
     @acquisition_type.setter
-    def acquisition_type(self, acquisition_type):
+    def acquisition_type(self, acquisition_type: AcquisitionType | None) -> None:
         self.__acquisition_type = acquisition_type
 
     @property
-    def verify_result(self):
+    def verify_result(self) -> bool | None:
         return self.__verify_result
 
     @verify_result.setter
-    def verify_result(self, verify_result):
+    def verify_result(self, verify_result: bool | None) -> None:
         self.__verify_result = verify_result
 
     @property
-    def verify_info_file_path(self):
+    def verify_info_file_path(self) -> str | None:
         return self.__verify_info_file_path
 
     @verify_info_file_path.setter
-    def verify_info_file_path(self, verify_info_file_path):
+    def verify_info_file_path(self, verify_info_file_path: str | None) -> None:
         self.__verify_info_file_path = verify_info_file_path
 
     @staticmethod
-    def __safe_text(value) -> str:
+    def __safe_text(value: object | None) -> str:
         if value is None:
             return ""
         return str(value).strip()
 
-    def generate_pdf(self):
+    def generate_pdf(self) -> None:
         logo_path = files("fit_assets.images") / "logo-640x640.png"
         logo_bytes = logo_path.read_bytes()
         logo_base64 = base64.b64encode(logo_bytes).decode("utf-8")
@@ -490,12 +491,12 @@ class PdfReportBuilder:
         ):
             os.remove(self.__verify_info_file_path)
 
-    def __load_template(self, template) -> Template:
+    def __load_template(self, template: str) -> Template:
         return Template(
             (files("fit_assets.templates") / template).read_text(encoding="utf-8")
         )
 
-    def __read_file(self, filename):
+    def __read_file(self, filename: str) -> str | None:
         try:
             file_path = os.path.join(self.__path, filename)
             if os.path.getsize(file_path) == 0:
@@ -505,15 +506,11 @@ class PdfReportBuilder:
                 return content if content.strip() else None
         except (FileNotFoundError, OSError):
             return None
-        except FileNotFoundError:
-            return None
-        except FileNotFoundError:
-            return None
 
-    def __force_wrap(self, text, every=80):
+    def __force_wrap(self, text: str, every: int = 80) -> str:
         return "\n".join(text[i : i + every] for i in range(0, len(text), every))
 
-    def __pec_eml_filename(self):
+    def __pec_eml_filename(self) -> str | None:
         if not self.__path or not os.path.isdir(self.__path):
             return None
 
@@ -523,7 +520,7 @@ class PdfReportBuilder:
 
         return None
 
-    def _acquisition_files_names(self):
+    def _acquisition_files_names(self) -> dict[str, str]:
         acquisition_files = {}
         files = [f.name for f in os.scandir(self.__path) if f.is_file()]
         for file in files:
@@ -573,11 +570,11 @@ class PdfReportBuilder:
 
         return acquisition_files
 
-    def __is_empty_file(self, filename):
+    def __is_empty_file(self, filename: str) -> bool:
         path = os.path.join(self.__path, filename)
         return not os.path.isfile(path) or os.path.getsize(path) == 0
 
-    def _zip_files_enum(self):
+    def _zip_files_enum(self) -> str:
         zip_enum = ""
         zip_dir = None
         # getting zip folder and passing file names and dimensions to the template
@@ -602,7 +599,7 @@ class PdfReportBuilder:
                     zip_enum += "<hr>"
         return zip_enum
 
-    def __hash_reader(self):
+    def __hash_reader(self) -> str:
         hash_text = ""
         filename = "acquisition.hash"
 
@@ -620,7 +617,7 @@ class PdfReportBuilder:
 
         return hash_text
 
-    def __insert_screenshot(self):
+    def __insert_screenshot(self) -> str:
         screenshot_path = os.path.join(self.__path, "acquisition_page.png")
         if not os.path.isfile(screenshot_path):
             return ""
@@ -660,7 +657,7 @@ class PdfReportBuilder:
         )
 
     @staticmethod
-    def __read_png_dimensions(path):
+    def __read_png_dimensions(path: str) -> tuple[int | None, int | None]:
         try:
             with open(path, "rb") as f:
                 header = f.read(24)
@@ -678,7 +675,7 @@ class PdfReportBuilder:
         height = int.from_bytes(header[20:24], "big")
         return width, height
 
-    def __insert_video_hyperlink(self):
+    def __insert_video_hyperlink(self) -> str | None:
         acquisition_files = {}
         files = [f.name for f in os.scandir(self.__path) if f.is_file()]
         for file in files:

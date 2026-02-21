@@ -29,7 +29,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def log_exception(exception: Exception, context: str = None):
+def log_exception(exception: Exception, context: str | None = None) -> None:
     """
     Logs a handled exception to a rotating file.
     """

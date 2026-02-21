@@ -12,22 +12,19 @@ import ctypes
 import inspect
 import locale
 import os
-import re
 import socket
 import subprocess
 import sys
-from configparser import ConfigParser
 from datetime import datetime, timezone
 from shutil import which
+from typing import Literal
 
 import ntplib
-import requests
-from packaging.version import Version
 
 from fit_common.core.debug import debug
-from fit_common.core.paths import resolve_path
 
 DEFAULT_LANG = "en"
+Platform = Literal["lin", "macos", "win", "other"]
 
 
 def __normalize_lang(value: str | None) -> str | None:
@@ -40,7 +37,7 @@ def __normalize_lang(value: str | None) -> str | None:
     return cleaned.split("_")[0].lower() if cleaned else None
 
 
-def get_system_lang():
+def get_system_lang() -> str:
     FIT_USER_SYSTEM_LANG = os.environ.get("FIT_USER_SYSTEM_LANG", "")
     normalized_user_lang = __normalize_lang(FIT_USER_SYSTEM_LANG)
     if normalized_user_lang:
@@ -100,8 +97,8 @@ def get_system_lang():
         return DEFAULT_LANG
 
 
-def get_platform():
-    platforms = {
+def get_platform() -> Platform:
+    platforms: dict[str, Platform] = {
         "linux": "lin",
         "linux1": "lin",
         "linux2": "lin",
@@ -115,7 +112,7 @@ def get_platform():
     return platforms[sys.platform]
 
 
-def is_bundled():
+def is_bundled() -> bool:
     return bool(getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"))
 
 
@@ -135,39 +132,12 @@ def is_admin() -> bool:
         return False
 
 
-def is_npcap_installed():
+def is_npcap_installed() -> bool:
     # reference https://npcap.com/guide/npcap-devguide.html section (Install-time detection)
     return os.path.exists("C:\\Program Files\\Npcap\\NPFInstall.exe")
 
 
-def has_new_portable_version():
-    parser = ConfigParser()
-    parser.read(resolve_path("assets/config.ini"))
-    url = parser.get("fit_properties", "fit_latest_version_url")
-
-    with requests.get(url, stream=True, timeout=10, verify=False) as response:
-        try:
-            remote_tag_name = response.json()["tag_name"]
-            local_tag_name = parser.get("fit_properties", "tag_name")
-
-            remote_tag_name = re.findall(r"(?:(\d+\.(?:\d+\.)*\d+))", remote_tag_name)
-            local_tag_name = re.findall(r"(?:(\d+\.(?:\d+\.)*\d+))", local_tag_name)
-
-            if (
-                len(remote_tag_name) == 1
-                and len(local_tag_name) == 1
-                and Version(remote_tag_name[0]) > Version(local_tag_name[0])
-            ):
-                return True
-            return False
-        except Exception as e:
-            from fit_common.core.error_handler import log_exception
-
-            log_exception(e, context="Error comparing remote and local version")
-            return False
-
-
-def get_ntp_date_and_time(server):
+def get_ntp_date_and_time(server: str) -> datetime | None:
     try:
         client = ntplib.NTPClient()
         response = client.request(server, version=3)
@@ -179,12 +149,12 @@ def get_ntp_date_and_time(server):
         return None
 
 
-def is_cmd(name):
+def is_cmd(name: str) -> bool:
     return which(name) is not None
 
 
 # search for the first free port to bind the proxy
-def find_free_port():
+def find_free_port() -> int:
     sock = socket.socket()
     try:
         sock.bind(("127.0.0.1", 0))
@@ -193,9 +163,11 @@ def find_free_port():
         sock.close()
 
 
-def get_context(obj):
+def get_context(obj: object) -> str:
     """Return 'ClassName.method_name' for the calling method."""
-    frame = inspect.currentframe().f_back
+    frame = inspect.currentframe()
+    if frame is None or frame.f_back is None:
+        return obj.__class__.__name__
     class_name = obj.__class__.__name__
-    method_name = frame.f_code.co_name
+    method_name = frame.f_back.f_code.co_name
     return f"{class_name}.{method_name}"

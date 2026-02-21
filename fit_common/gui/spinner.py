@@ -25,7 +25,7 @@ class Spinner(QObject):
     _ui_start = Signal()
     _ui_stop = Signal()
 
-    def __init__(self, parent: QWidget, opacity: int = 160):
+    def __init__(self, parent: QWidget, opacity: int = 160) -> None:
         super().__init__(parent)
         self._parent = parent
         self._gif_path = files("fit_assets.images") / "spinner.gif"
@@ -56,33 +56,33 @@ class Spinner(QObject):
         parent.installEventFilter(self)
 
     # API pubblica
-    def start(self):
+    def start(self) -> None:
         self._ui_start.emit()
 
-    def stop(self):
+    def stop(self) -> None:
         self._ui_stop.emit()
 
-    def state(self):
+    def state(self) -> QMovie.MovieState | None:
         if self._movie:
             return self._movie.state()
         return None
 
-    def __ui_start(self):
+    def __ui_start(self) -> None:
         self._sync_geometry()
         self._overlay.show()
         if self._movie:
             self._movie.start()
 
-    def __ui_stop(self):
+    def __ui_stop(self) -> None:
         if self._movie:
             self._movie.stop()
         self._overlay.hide()
 
-    def _sync_geometry(self):
+    def _sync_geometry(self) -> None:
         self._overlay.setGeometry(self._parent.rect())
         self._label.setGeometry(self._overlay.rect())
 
-    def eventFilter(self, watched, event):
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
         if watched is self._parent and event.type() in (QEvent.Resize, QEvent.Show):
             self._sync_geometry()
         return super().eventFilter(watched, event)

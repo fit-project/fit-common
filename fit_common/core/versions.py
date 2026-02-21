@@ -58,16 +58,24 @@ def get_version(start_path: Path | None = None) -> str | None:
     return get_version_from_bundle()
 
 
-def get_remote_tag_version(repo: str):
+def get_local_version() -> str:
+    return get_version() or "0.0.0"
+
+
+def get_remote_tag_version(repo: str) -> str | None:
     url = f"https://api.github.com/repos/fit-project/{repo}/tags"
     response = requests.get(url, timeout=5)
     tags = response.json()
-    if tags:
-        return tags[0]["name"]
+    if isinstance(tags, list) and tags:
+        first_tag = tags[0]
+        if isinstance(first_tag, dict):
+            tag_name = first_tag.get("name")
+            if isinstance(tag_name, str):
+                return tag_name
     return None
 
 
-def has_new_release_version(repo: str):
+def has_new_release_version(repo: str) -> bool:
     if getattr(sys, "frozen", False):
         try:
             response = requests.get(
@@ -76,7 +84,12 @@ def has_new_release_version(repo: str):
             )
             response.raise_for_status()
 
-            remote_tag_name = response.json().get("tag_name", "")
+            payload = response.json()
+            remote_tag_name = (
+                payload.get("tag_name", "")
+                if isinstance(payload, dict)
+                else ""
+            )
             remote_version_str = extract_version(remote_tag_name)
             local_version_str = get_local_version()
 
@@ -93,6 +106,6 @@ def has_new_release_version(repo: str):
         return False
 
 
-def extract_version(tag_name):
+def extract_version(tag_name: str) -> str:
     match = re.search(r"\d+\.\d+\.\d+", tag_name)
     return match.group(0) if match else ""

@@ -11,7 +11,6 @@ import logging
 from datetime import datetime
 from enum import Enum
 from logging.handlers import RotatingFileHandler
-
 from fit_common.core.paths import resolve_log_path
 
 
@@ -24,7 +23,7 @@ class DebugLevel(Enum):
 DEBUG_LEVEL = DebugLevel.NONE
 
 
-def set_debug_level(level: DebugLevel):
+def set_debug_level(level: DebugLevel) -> None:
     global DEBUG_LEVEL
     DEBUG_LEVEL = level
 
@@ -44,7 +43,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def debug(*args, context=None):
+def debug(*args: object, context: str | None = None) -> None:
     if DEBUG_LEVEL == DebugLevel.NONE:
         return
 

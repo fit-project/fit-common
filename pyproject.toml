@@ -26,7 +26,12 @@ requests = "^2.32.4"
 jinja2 = "^3.1.6"
 pypdf = "^6.1.1"
 xhtml2pdf = "^0.2.17"
+pytest = "^9.0.2"
 
+[tool.pytest.ini_options]
+markers = [
+    "contract: cross-module contract tests for public interfaces and integrations",
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

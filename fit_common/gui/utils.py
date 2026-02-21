@@ -11,6 +11,7 @@ import os
 import subprocess
 import sys
 from enum import Enum, auto
+from typing import Literal
 
 from PySide6 import QtWidgets
 
@@ -42,7 +43,9 @@ translations = load_translations()
 
 
 def show_dialog(
-    severity: str = "information",
+    severity: Literal[
+        "error", "critical", "warning", "warn", "question", "info", "information"
+    ] = "information",
     title: str = "",
     message: str = "",
     details: str = "",
@@ -72,7 +75,9 @@ def show_dialog(
         return
 
 
-def show_finish_verification_dialog(path, verification_type):
+def show_finish_verification_dialog(
+    path: str, verification_type: VerificationTypes
+) -> None:
 
     title = translations["VERIFICATION_COMPLETED"]
     msg = translations["VERIFY_PEC_SUCCESS_MSG"]
@@ -94,7 +99,9 @@ def show_finish_verification_dialog(path, verification_type):
     dialog.exec()
 
 
-def __open_verification_report(dialog, path, verification_type):
+def __open_verification_report(
+    dialog: Dialog, path: str, verification_type: VerificationTypes
+) -> None:
 
     dialog.close()
 
@@ -115,8 +122,10 @@ def __open_verification_report(dialog, path, verification_type):
 
 
 def get_verification_label_text(
-    verification_name, verification_status, verification_message
-):
+    verification_name: str,
+    verification_status: Status,
+    verification_message: str,
+) -> str:
     __status = (
         '<strong style="color:green">{}</strong>'.format(verification_status)
         if verification_status == Status.SUCCESS
@@ -131,7 +140,7 @@ def get_verification_label_text(
 
 def add_label_in_verification_status_list(
     status_list: QtWidgets.QListWidget, label_text: str
-):
+) -> None:
     item = QtWidgets.QListWidgetItem(status_list)
     label = QtWidgets.QLabel(label_text)
     label.setWordWrap(True)
@@ -140,7 +149,7 @@ def add_label_in_verification_status_list(
     status_list.setItemWidget(item, label)
 
 
-def show_finish_acquisition_dialog(acquisition_directory):
+def show_finish_acquisition_dialog(acquisition_directory: str) -> None:
 
     dialog = Dialog(
         translations["ACQUISITION_FINISHED_TITLE"],
@@ -156,7 +165,7 @@ def show_finish_acquisition_dialog(acquisition_directory):
     dialog.exec()
 
 
-def __open_acquisition_directory(dialog, acquisition_directory):
+def __open_acquisition_directory(dialog: Dialog, acquisition_directory: str) -> None:
     platform = get_platform()
     if platform == "win":
         os.startfile(acquisition_directory)

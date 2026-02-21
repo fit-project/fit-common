@@ -8,16 +8,16 @@
 ######
 
 
-from PySide6.QtMultimedia import QMediaDevices
+from PySide6.QtMultimedia import QAudioDevice, QMediaDevices
 
 from fit_common.core.utils import is_cmd
 
 
-def is_installed_ffmpeg():
+def is_installed_ffmpeg() -> bool:
     return is_cmd("ffmpeg")
 
 
-def get_vb_cable_virtual_audio_device():
+def get_vb_cable_virtual_audio_device() -> QAudioDevice | None:
     for dev in QMediaDevices().audioInputs():
         if any(
             x in dev.description()
@@ -27,7 +27,7 @@ def get_vb_cable_virtual_audio_device():
     return None
 
 
-def is_vb_cable_first_ouput_audio_device():
+def is_vb_cable_first_ouput_audio_device() -> bool:
     for idx, dev in enumerate(QMediaDevices().audioOutputs()):
         if any(
             x in dev.description()
@@ -37,8 +37,8 @@ def is_vb_cable_first_ouput_audio_device():
     return False
 
 
-def enable_audio_recording():
-    return (
+def enable_audio_recording() -> bool:
+    return bool(
         is_installed_ffmpeg()
         and get_vb_cable_virtual_audio_device()
         and is_vb_cable_first_ouput_audio_device()
