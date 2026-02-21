@@ -24,6 +24,7 @@ This repository provides common utilities, error handling, version management, a
 ## Requirements
 - **Python** 3.11
 - **Poetry** (recommended for development)
+- **fit-assets** package available in the environment (runtime dependency used by `fit_common`)
 
 ---
 
@@ -31,6 +32,10 @@ This repository provides common utilities, error handling, version management, a
 
 ### As dependency
 ```bash
+# install runtime assets package first
+pip install git+https://github.com/fit-project/fit-assets.git@v1.0.0-rc1
+
+# then install fit-common
 poetry add git+https://github.com/fit-project/fit-common.git@main
 # or
 pip install git+https://github.com/fit-project/fit-common.git@main
@@ -41,7 +46,52 @@ pip install git+https://github.com/fit-project/fit-common.git@main
 git clone https://github.com/fit-project/fit-common.git
 cd fit-common
 poetry install
+pip install git+https://github.com/fit-project/fit-assets.git@v1.0.0-rc1
 ```
+
+---
+
+## Local checks (same as CI)
+
+Run these commands before opening a PR, so failures are caught locally first.
+
+### What each tool does
+- `pytest`: runs automated tests (`unit`, `contract`, and `integration` suites).
+- `ruff`: checks code style and common static issues (lint).
+- `mypy`: performs static type checking on annotated Python code.
+- `bandit`: scans source code for common security anti-patterns.
+- `pip-audit`: checks installed dependencies for known CVEs.
+
+### 1) Base setup
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -U pip
+pip install . pytest ruff mypy "bandit[toml]" pip-audit
+```
+
+### 2) Test suite
+```bash
+# unit tests
+pytest -m "not contract and not integration" -q tests
+
+# contract tests
+pytest -m contract -q tests
+
+# integration tests (requires fit-assets package)
+pip install git+https://github.com/fit-project/fit-assets.git@v1.0.0-rc1
+pytest -m integration -q tests
+```
+
+### 3) Quality and security checks
+```bash
+ruff check fit_common tests
+mypy
+bandit -c pyproject.toml -r fit_common -q -ll -ii
+pip-audit --progress-spinner off
+```
+
+Note: `pip-audit` may print a skip message for `fit-common` because it is a local package and not published on PyPI.
 
 ---
 

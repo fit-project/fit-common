@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from fit_common.core import versions
 
 

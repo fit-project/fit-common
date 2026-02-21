@@ -18,7 +18,8 @@ def resolve_path(path: str) -> str:
     """
     if getattr(sys, "frozen", False):
         # Running from a bundled executable
-        return os.path.abspath(os.path.join(sys._MEIPASS, path))
+        base_path = getattr(sys, "_MEIPASS", os.getcwd())
+        return os.path.abspath(os.path.join(base_path, path))
     else:
         # Running in development mode
         return os.path.abspath(os.path.join(os.getcwd(), path))

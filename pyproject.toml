@@ -27,11 +27,43 @@ jinja2 = "^3.1.6"
 pypdf = "^6.1.1"
 xhtml2pdf = "^0.2.17"
 pytest = "^9.0.2"
+ruff = "^0.15.2"
+mypy = "^1.19.1"
+bandit = {extras = ["toml"], version = "^1.9.3"}
+pip-audit = "^2.10.0"
+cryptography = ">=46.0.5"
+pillow = ">=12.1.1"
 
 [tool.pytest.ini_options]
 markers = [
     "contract: cross-module contract tests for public interfaces and integrations",
+    "integration: integration tests with real external resources and dependencies",
 ]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["F"]
+
+[tool.mypy]
+python_version = "3.11"
+pretty = true
+show_error_codes = true
+warn_unused_configs = true
+ignore_missing_imports = true
+disable_error_code = ["import-untyped"]
+files = ["fit_common/core", "fit_common/lang"]
+exclude = ["^tests/"]
+
+[[tool.mypy.overrides]]
+module = ["fit_common.core.pdf_report_builder", "fit_common.core.__init__"]
+ignore_errors = true
+
+[tool.bandit]
+targets = ["fit_common"]
+exclude_dirs = ["tests"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -7,7 +7,7 @@
 # -----
 ######
 
-import importlib
+import importlib.util
 import re
 import sys
 from pathlib import Path
@@ -29,11 +29,16 @@ def find_pyproject(start_path: Path) -> Path | None:
 def get_version_from_bundle() -> str | None:
     try:
         main_module = sys.modules["__main__"]
-        main_path = Path(main_module.__file__).resolve()
+        main_file = getattr(main_module, "__file__", None)
+        if not isinstance(main_file, str):
+            return None
+        main_path = Path(main_file).resolve()
         version_path = main_path.parent / "_version.py"
 
         if version_path.exists():
             spec = importlib.util.spec_from_file_location("_version", version_path)
+            if spec is None or spec.loader is None:
+                return None
             version_mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(version_mod)
             return getattr(version_mod, "__version__", "unknown version")
@@ -45,7 +50,10 @@ def get_version_from_bundle() -> str | None:
 def get_version(start_path: Path | None = None) -> str | None:
     try:
         if start_path is None:
-            start_path = Path(sys.modules["__main__"].__file__).resolve()
+            main_file = getattr(sys.modules["__main__"], "__file__", None)
+            if not isinstance(main_file, str):
+                return None
+            start_path = Path(main_file).resolve()
 
         pyproject_path = find_pyproject(start_path)
         if pyproject_path:

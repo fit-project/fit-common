@@ -75,13 +75,13 @@ def get_system_lang() -> str:
                 pass
         elif get_platform() == "win":
             try:
-                import ctypes
-
-                lang_id = ctypes.windll.kernel32.GetUserDefaultUILanguage()
-                win_locale = locale.windows_locale.get(lang_id)
-                normalized = __normalize_lang(win_locale)
-                if normalized:
-                    return normalized
+                windll = getattr(ctypes, "windll", None)
+                if windll is not None:
+                    lang_id = windll.kernel32.GetUserDefaultUILanguage()
+                    win_locale = locale.windows_locale.get(lang_id)
+                    normalized = __normalize_lang(win_locale)
+                    if normalized:
+                        return normalized
             except Exception:
                 pass
         else:
@@ -124,7 +124,10 @@ def is_admin() -> bool:
         # Windows
         if get_platform() == "win":
             try:
-                return bool(ctypes.windll.shell32.IsUserAnAdmin())
+                windll = getattr(ctypes, "windll", None)
+                if windll is None:
+                    return False
+                return bool(windll.shell32.IsUserAnAdmin())
             except Exception as exc:
                 debug(f"Windows admin check failed: {exc}", context="is_admin")
                 return False

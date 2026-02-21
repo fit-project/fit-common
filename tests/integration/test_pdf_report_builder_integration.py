@@ -1,13 +1,21 @@
+import importlib.util
+
 import pytest
+from pypdf import PdfReader
 
 from fit_common.core.acquisition_type import AcquisitionType
 from fit_common.core.pdf_report_builder import PdfReportBuilder, ReportType
 
 
-def _translations():
+def _require_fit_assets() -> None:
+    if importlib.util.find_spec("fit_assets") is None:
+        pytest.skip("fit_assets package not installed. Install it to run integration tests.")
+
+
+def _translations() -> dict[str, str]:
     return {
-        "DOCUMENT_TITLE": "Doc",
-        "DOCUMENT_SUBTITLE": "Sub",
+        "DOCUMENT_TITLE": "Document",
+        "DOCUMENT_SUBTITLE": "Subtitle",
         "APPLICATION_SHORT_NAME": "FIT",
         "SECTION_DESCRIPTION_FIT_APPLICATION": "See {}",
         "RELEASES_LINK": "https://example.test/releases",
@@ -56,6 +64,7 @@ def _translations():
         "TABLE_ROW_DESCRIPTION_CER": "cer",
         "TABLE_ROW_DESCRIPTION_SSLKEYLOG": "sslkey",
         "TABLE_ROW_DESCRIPTION_TRACEROUTE": "traceroute",
+        "TABLE_ROW_DESCRIPTION_PEC_EMAIL": "pec",
         "SECTION_TITLE_SYSTEM_ARTIFACTS": "Artifacts",
         "SECTION_DESCRIPTION_SYSTEM_ARTIFACTS": "Artifacts desc",
         "TABLE_COLUMN_FILE_NAME": "File",
@@ -79,132 +88,60 @@ def _translations():
     }
 
 
-class _FakeResource:
-    def __init__(self, package_name: str, name: str = ""):
-        self.package_name = package_name
-        self.name = name
+@pytest.mark.integration
+def test_generate_pdf_verify_real_stack(tmp_path):
+    _require_fit_assets()
 
-    def __truediv__(self, other: str):
-        return _FakeResource(self.package_name, other)
-
-    def read_bytes(self):
-        return b"logo-bytes"
-
-    def read_text(self, encoding="utf-8"):
-        return "<html>{{ document_title }}</html>"
-
-
-class _FakeFrontTemplate:
-    def render(self, **kwargs):
-        return "front-html"
-
-
-class _CaptureTemplate:
-    captured = []
-
-    def __init__(self, _text):
-        pass
-
-    def render(self, **kwargs):
-        _CaptureTemplate.captured.append(kwargs)
-        return "content-html"
-
-
-class _FakePdfReader:
-    def __init__(self, _file_obj):
-        self.pages = [object()]
-
-
-class _FakePdfWriter:
-    def __init__(self):
-        self.pages = []
-
-    def add_page(self, page):
-        self.pages.append(page)
-
-    def write(self, out):
-        out.write(b"%PDF")
-
-
-@pytest.mark.contract
-def test_pdf_report_builder_verify_contract_contains_verification_section(tmp_path, monkeypatch):
-    _CaptureTemplate.captured.clear()
-    info = tmp_path / "verify.txt"
-    info.write_text("verify info", encoding="utf-8")
+    verify_info = tmp_path / "verify_info.txt"
+    verify_info.write_text("verification detail", encoding="utf-8")
+    output_name = "verification_report.pdf"
 
     builder = PdfReportBuilder(
         ReportType.VERIFY,
         translations=_translations(),
         path=str(tmp_path),
-        filename="verify.pdf",
-        case_info={"name": "case"},
+        filename=output_name,
+        case_info={"name": "Case A"},
     )
     builder.ntp = "2026-02-21"
     builder.verify_result = True
-    builder.verify_info_file_path = str(info)
-
-    monkeypatch.setattr("fit_common.core.pdf_report_builder.files", lambda package: _FakeResource(package))
-    monkeypatch.setattr("fit_common.core.pdf_report_builder.get_version", lambda: "1.0.0")
-    monkeypatch.setattr("fit_common.core.pdf_report_builder.Template", _CaptureTemplate)
-    monkeypatch.setattr("fit_common.core.pdf_report_builder.PdfReader", _FakePdfReader)
-    monkeypatch.setattr("fit_common.core.pdf_report_builder.PdfWriter", _FakePdfWriter)
-    monkeypatch.setattr(
-        "fit_common.core.pdf_report_builder.pisa.CreatePDF",
-        lambda html, dest, options: dest.write(b"pdf"),
-    )
-    monkeypatch.setattr(
-        PdfReportBuilder,
-        "_PdfReportBuilder__load_template",
-        lambda self, template_name: _FakeFrontTemplate(),
-    )
+    builder.verify_info_file_path = str(verify_info)
 
     builder.generate_pdf()
 
-    assert (tmp_path / "verify.pdf").exists()
-    payload = _CaptureTemplate.captured[-1]
-    types = [s["type"] for s in payload["sections"]]
-    assert "verification_report" in types
+    output_file = tmp_path / output_name
+    assert output_file.exists()
+    reader = PdfReader(str(output_file))
+    assert len(reader.pages) >= 1
+    assert not verify_info.exists()
 
 
-@pytest.mark.contract
-def test_pdf_report_builder_acquisition_contract_includes_core_sections(tmp_path, monkeypatch):
-    _CaptureTemplate.captured.clear()
-    (tmp_path / "acquisition.log").write_text("ok", encoding="utf-8")
+@pytest.mark.integration
+def test_generate_pdf_acquisition_real_stack(tmp_path):
+    _require_fit_assets()
+
+    (tmp_path / "acquisition.log").write_text("log content", encoding="utf-8")
+    (tmp_path / "acquisition.hash").write_text("sha256 abc\n", encoding="latin-1")
+    (tmp_path / "whois.txt").write_text("owner example", encoding="utf-8")
+    (tmp_path / "video.mp4").write_bytes(b"fake-video")
+    (tmp_path / "capture.pcap").write_bytes(b"fake-pcap")
+    output_name = "acquisition_report.pdf"
 
     builder = PdfReportBuilder(
         ReportType.ACQUISITION,
         translations=_translations(),
         path=str(tmp_path),
-        filename="acq.pdf",
-        case_info={"name": "case"},
+        filename=output_name,
+        case_info={"name": "Case B"},
         screen_recorder_filename="video.mp4",
         packet_capture_filename="capture.pcap",
     )
     builder.acquisition_type = AcquisitionType.WEB
     builder.ntp = "2026-02-21"
 
-    monkeypatch.setattr("fit_common.core.pdf_report_builder.files", lambda package: _FakeResource(package))
-    monkeypatch.setattr("fit_common.core.pdf_report_builder.get_version", lambda: "1.0.0")
-    monkeypatch.setattr("fit_common.core.pdf_report_builder.Template", _CaptureTemplate)
-    monkeypatch.setattr("fit_common.core.pdf_report_builder.PdfReader", _FakePdfReader)
-    monkeypatch.setattr("fit_common.core.pdf_report_builder.PdfWriter", _FakePdfWriter)
-    monkeypatch.setattr(
-        "fit_common.core.pdf_report_builder.pisa.CreatePDF",
-        lambda html, dest, options: dest.write(b"pdf"),
-    )
-    monkeypatch.setattr(
-        PdfReportBuilder,
-        "_PdfReportBuilder__load_template",
-        lambda self, template_name: _FakeFrontTemplate(),
-    )
-
     builder.generate_pdf()
-    payload = _CaptureTemplate.captured[-1]
-    types = [s["type"] for s in payload["sections"]]
 
-    assert "fit_description" in types
-    assert "digital_forensics" in types
-    assert "wacz_description" in types
-    assert "case_info" in types
-    assert "system_artifacts" in types
-    assert "acquired_content" in types
+    output_file = tmp_path / output_name
+    assert output_file.exists()
+    reader = PdfReader(str(output_file))
+    assert len(reader.pages) >= 1

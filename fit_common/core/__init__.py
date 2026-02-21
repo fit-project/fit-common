@@ -46,9 +46,7 @@ try:
     )
 except ImportError:
     # Optional if those files are not available yet during early development
-    debug = None
-    log_exception = None
-    handle_crash = None
+    pass
 
 __all__ = [
     # paths
