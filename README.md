@@ -12,17 +12,8 @@ This repository provides common utilities, error handling, version management, a
 
 ---
 
-## Features
-- 🔧 **Error and crash handling** (`fit_common/core/error_handler.py`, `crash_handler.py`)
-- 🧩 **Debug utilities** and logging (`debug.py`)
-- 📦 **Version management** (`fit_common/core/utils/versions.py`)
-- 🧠 **Cross-module constants** and configuration helpers
-- 🧪 **Tests and stubs** for module integration
-
----
-
 ## Requirements
-- **Python** 3.11
+- **Python** >=3.11,<3.14
 - **Poetry** (recommended for development)
 - **fit-assets** package available in the environment (runtime dependency used by `fit_common`)
 
