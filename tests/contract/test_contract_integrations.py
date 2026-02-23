@@ -7,7 +7,6 @@ import fit_common.core.versions as versions
 import fit_common.gui.utils as gui_utils
 
 
-# Test
 class _Resp:
     def __init__(self, payload):
         self._payload = payload
