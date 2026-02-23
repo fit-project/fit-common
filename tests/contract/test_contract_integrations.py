@@ -7,6 +7,7 @@ import fit_common.core.versions as versions
 import fit_common.gui.utils as gui_utils
 
 
+# Test
 class _Resp:
     def __init__(self, payload):
         self._payload = payload
@@ -77,12 +78,17 @@ def test_gui_verification_report_open_contract_windows(monkeypatch, tmp_path):
     dialog = _Dialog()
     monkeypatch.setattr(gui_utils.sys, "platform", "win32")
     monkeypatch.setattr(
-        gui_utils.os, "startfile", lambda path: startfile_calls.append(path), raising=False
+        gui_utils.os,
+        "startfile",
+        lambda path: startfile_calls.append(path),
+        raising=False,
     )
     monkeypatch.setattr(
         gui_utils.subprocess, "call", lambda cmd: subprocess_calls.append(cmd)
     )
-    gui_utils.__open_verification_report(dialog, str(tmp_path), gui_utils.VerificationTypes.PEC)
+    gui_utils.__open_verification_report(
+        dialog, str(tmp_path), gui_utils.VerificationTypes.PEC
+    )
     assert dialog.closed is True
     opened = []
     opened.extend(startfile_calls)
