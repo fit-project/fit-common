@@ -11,7 +11,7 @@ from typing import Iterable, Literal, Optional, Sequence
 
 from fit_common.core import debug, get_platform
 
-_LOG_CONTEXT = "core.ffmpeg"
+_LOG_CONTEXT = "fit_common.core.ffmpeg"
 
 _PERMISSION_DENIED_PATTERNS = [
     "not authorized",
@@ -64,9 +64,7 @@ def get_list_devices(
     proc = execute_ffmpeg_command(ffmpeg_path, args, timeout=timeout)
 
     stderr = normalize_output(proc.stderr)
-    combined_output = "\n".join(
-        filter(None, [normalize_output(proc.stdout), stderr])
-    )
+    combined_output = "\n".join(filter(None, [normalize_output(proc.stdout), stderr]))
 
     if proc.returncode != 0:
         return ListDevicesResult(proc.returncode, [], stderr.strip())
@@ -126,6 +124,7 @@ def find_audio_device_index(devices: Iterable[DeviceInfo]) -> Optional[str]:
         if device.kind == "audio":
             return _device_index_to_str(device)
     return None
+
 
 def execute_ffmpeg_command(
     ffmpeg_path: Path | str,
