@@ -25,6 +25,7 @@ from .utils import (
     find_free_port,
     get_context,
     get_ntp_date_and_time,
+    get_ntp_time_info,
     get_platform,
     get_system_lang,
     is_admin,
@@ -67,6 +68,7 @@ __all__ = [
     "is_bundled",
     "find_free_port",
     "get_ntp_date_and_time",
+    "get_ntp_time_info",
     "get_context",
     "open_macos_privacy_settings",
     # logging

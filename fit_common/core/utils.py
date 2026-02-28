@@ -134,9 +134,15 @@ def is_admin() -> bool:
                     return False
                 return bool(windll.shell32.IsUserAnAdmin())
             except Exception as exc:
-                debug(f"Windows admin check failed: {exc}", context="is_admin")
+                debug(
+                    f"Windows admin check failed: {exc}",
+                    context="fit_common.core.utilis.is_admin",
+                )
                 return False
-        debug("Admin check failed: unsupported platform", context="is_admin")
+        debug(
+            "Admin check failed: unsupported platform",
+            context="fit_common.core.utilis.is_admin",
+        )
         return False
 
 
@@ -172,7 +178,7 @@ def get_ntp_time_info(server: str | None) -> dict[str, datetime | str | None]:
             last_exception = exception
             debug(
                 f"NTP request failed with server: {candidate}: {exception}",
-                context="get_ntp_time_info",
+                context="fit_common.core.utilis.get_ntp_time_info",
             )
 
     if last_exception is not None:
