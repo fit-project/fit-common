@@ -55,7 +55,7 @@ Run these commands before opening a PR, so failures are caught locally first.
 
 ### 1) Base setup
 ```bash
-python3 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install -U pip
 python -m pip install "setuptools>=78.1.1"
