@@ -174,3 +174,16 @@ def get_context(obj: object) -> str:
     class_name = obj.__class__.__name__
     method_name = frame.f_back.f_code.co_name
     return f"{class_name}.{method_name}"
+
+
+def open_macos_privacy_settings(self) -> None:
+    url = (
+        "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
+    )
+    try:
+        subprocess.run(["open", url], check=False)
+    except OSError as exc:
+        debug(
+            f"❌ Unable to open System Preferences: {exc}",
+            context=get_context(self),
+        )

@@ -31,6 +31,7 @@ from .utils import (
     is_bundled,
     is_cmd,
     is_npcap_installed,
+    open_macos_privacy_settings,
 )
 
 # ---- Logging & error handling ----
@@ -67,6 +68,7 @@ __all__ = [
     "find_free_port",
     "get_ntp_date_and_time",
     "get_context",
+    "open_macos_privacy_settings",
     # logging
     "debug",
     "DEBUG_LEVEL",
