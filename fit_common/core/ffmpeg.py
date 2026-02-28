@@ -64,9 +64,13 @@ def get_list_devices(
     proc = execute_ffmpeg_command(ffmpeg_path, args, timeout=timeout)
 
     stderr = normalize_output(proc.stderr)
-    combined_output = "\n".join(filter(None, [normalize_output(proc.stdout), stderr]))
+    stdout = normalize_output(proc.stdout)
+    combined_output = "\n".join(filter(None, [stdout, stderr]))
 
     if proc.returncode != 0:
+        if get_platform() == "macos" and _is_expected_list_error(stderr):
+            devices = _parse_device_listing(combined_output)
+            return ListDevicesResult(0, devices, stderr.strip())
         return ListDevicesResult(proc.returncode, [], stderr.strip())
 
     devices = _parse_device_listing(combined_output)
@@ -84,7 +88,7 @@ def _list_devices_args(platform: str) -> list[str]:
 
 
 _DEVICE_SECTION_RE = re.compile(r"(audio|video)\s+devices", re.IGNORECASE)
-_DEVICE_ENTRY_RE = re.compile(r"^\s*\[(\d+)\]\s*(?P<name>.+)$")
+_DEVICE_ENTRY_RE = re.compile(r".*\[(\d+)\]\s*(?P<name>.+)$")
 
 
 def _parse_device_listing(output: str) -> list[DeviceInfo]:
@@ -102,6 +106,10 @@ def _parse_device_listing(output: str) -> list[DeviceInfo]:
         name = entry_match.group("name").strip()
         devices.append(DeviceInfo(index=index, name=name, kind=current_kind))
     return devices
+
+
+def _is_expected_list_error(stderr: str) -> bool:
+    return "error opening input" in stderr.lower()
 
 
 def _device_index_to_str(device: DeviceInfo) -> Optional[str]:
@@ -136,12 +144,12 @@ def execute_ffmpeg_command(
     ffmpeg_exec = str(ffmpeg_path)
     command = [ffmpeg_exec, *args]
     quoted = " ".join(shlex.quote(part) for part in command)
-    debug(f"Running ffmpeg: {quoted}", context=_LOG_CONTEXT)
+    debug(f"ℹ️ Running ffmpeg: {quoted}", context=_LOG_CONTEXT)
 
     proc = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
     if proc.stderr:
         for line in proc.stderr.splitlines():
-            debug(f"[ffmpeg] {line}", context=_LOG_CONTEXT)
+            debug(f"ℹ️ [ffmpeg] {line}", context=_LOG_CONTEXT)
     return proc
 
 
