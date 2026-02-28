@@ -25,6 +25,11 @@ from fit_common.core.debug import debug
 
 DEFAULT_LANG = "en"
 Platform = Literal["lin", "macos", "win", "other"]
+DEFAULT_NTP_FALLBACK_SERVERS = (
+    "time.google.com",
+    "time.cloudflare.com",
+    "pool.ntp.org",
+)
 
 
 def __normalize_lang(value: str | None) -> str | None:
@@ -140,16 +145,59 @@ def is_npcap_installed() -> bool:
     return os.path.exists("C:\\Program Files\\Npcap\\NPFInstall.exe")
 
 
-def get_ntp_date_and_time(server: str) -> datetime | None:
-    try:
-        client = ntplib.NTPClient()
-        response = client.request(server, version=3)
-        return datetime.fromtimestamp(response.tx_time, timezone.utc)
-    except Exception as exception:
+def _build_ntp_server_list(server: str | None) -> list[str]:
+    servers: list[str] = []
+    for candidate in (server, *DEFAULT_NTP_FALLBACK_SERVERS):
+        if not candidate:
+            continue
+        cleaned = candidate.strip()
+        if cleaned and cleaned not in servers:
+            servers.append(cleaned)
+    return servers
+
+
+def get_ntp_time_info(server: str | None) -> dict[str, datetime | str | None]:
+    client = ntplib.NTPClient()
+    last_exception: Exception | None = None
+
+    for candidate in _build_ntp_server_list(server):
+        try:
+            response = client.request(candidate, version=3)
+            return {
+                "datetime": datetime.fromtimestamp(response.tx_time, timezone.utc),
+                "server": candidate,
+                "source": "ntp",
+            }
+        except Exception as exception:
+            last_exception = exception
+            debug(
+                f"NTP request failed with server: {candidate}: {exception}",
+                context="get_ntp_time_info",
+            )
+
+    if last_exception is not None:
         from fit_common.core.error_handler import log_exception
 
-        log_exception(exception, context=f"NTP request failed with server: {server}")
-        return None
+        log_exception(
+            last_exception,
+            context=(
+                "NTP request failed for all servers: "
+                + ", ".join(_build_ntp_server_list(server))
+            ),
+        )
+
+    return {
+        "datetime": datetime.now(timezone.utc),
+        "server": None,
+        "source": "os",
+    }
+
+
+def get_ntp_date_and_time(server: str | None) -> datetime | None:
+    time_info = get_ntp_time_info(server)
+    if time_info["source"] == "ntp":
+        return time_info["datetime"]  # type: ignore[return-value]
+    return None
 
 
 def is_cmd(name: str) -> bool:
