@@ -7,7 +7,7 @@ import shlex
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Literal, Optional, Sequence
+from typing import Iterable, Literal, Optional, Sequence, cast
 
 from fit_common.core import debug, get_platform
 
@@ -97,7 +97,7 @@ def _parse_device_listing(output: str) -> list[DeviceInfo]:
     for line in output.splitlines():
         section_match = _DEVICE_SECTION_RE.search(line)
         if section_match:
-            current_kind = section_match.group(1).lower()
+            current_kind = cast(DeviceKind, section_match.group(1).lower())
             continue
         entry_match = _DEVICE_ENTRY_RE.match(line)
         if not entry_match:
