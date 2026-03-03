@@ -41,6 +41,15 @@ class State(Enum):
 translations = load_translations()
 
 
+def _dispose_dialog(dialog) -> None:
+    if dialog is None:
+        return
+    dialog.deleteLater()
+    app = QtWidgets.QApplication.instance()
+    if app is not None:
+        app.processEvents()
+
+
 def _open_with_default_app(path: str) -> None:
     startfile = getattr(os, "startfile", None)
     if callable(startfile):
@@ -79,7 +88,10 @@ def show_dialog(
 
         dialog = Dialog(title, message, details, icon)
         dialog.right_button.clicked.connect(dialog.close)
-        dialog.exec()
+        try:
+            dialog.exec()
+        finally:
+            _dispose_dialog(dialog)
     except Exception:
         return
 
@@ -105,7 +117,10 @@ def show_finish_verification_dialog(
         lambda: __open_verification_report(dialog, path, verification_type)
     )
 
-    dialog.exec()
+    try:
+        dialog.exec()
+    finally:
+        _dispose_dialog(dialog)
 
 
 def __open_verification_report(
@@ -165,7 +180,10 @@ def show_finish_acquisition_dialog(acquisition_directory: str) -> None:
         lambda: __open_acquisition_directory(dialog, acquisition_directory)
     )
 
-    dialog.exec()
+    try:
+        dialog.exec()
+    finally:
+        _dispose_dialog(dialog)
 
 
 def __open_acquisition_directory(dialog: Dialog, acquisition_directory: str) -> None:
