@@ -11,6 +11,7 @@ import importlib.util
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
 import requests
 import tomllib
@@ -83,16 +84,32 @@ def get_remote_tag_version(repo: str) -> str | None:
     return None
 
 
-def has_new_release_version(repo: str) -> bool:
-    if getattr(sys, "frozen", False):
-        try:
-            response = requests.get(
-                f"https://api.github.com/repos/fit-project/{repo}/releases/latest",
-                timeout=10,
-            )
-            response.raise_for_status()
+def has_new_release_version(
+    repo: str,
+    asset_name: str | None = None,
+    *,
+    asset_filters: dict[str, str] | None = None,
+) -> bool:
+    return (
+        get_new_release_version(
+            repo,
+            asset_name=asset_name,
+            asset_filters=asset_filters,
+        )
+        is not None
+    )
 
-            payload = response.json()
+
+def get_new_release_version(
+    repo: str,
+    asset_name: str | None = None,
+    *,
+    asset_filters: dict[str, str] | None = None,
+) -> str | None:
+    #if getattr(sys, "frozen", False):
+    if True:
+        try:
+            payload = get_latest_release_payload(repo)
             remote_tag_name = (
                 payload.get("tag_name", "")
                 if isinstance(payload, dict)
@@ -104,14 +121,79 @@ def has_new_release_version(repo: str) -> bool:
             try:
                 remote_version = Version(remote_version_str)
                 local_version = Version(local_version_str)
-                return remote_version > local_version
+                if remote_version <= local_version:
+                    return None
             except InvalidVersion:
-                return False
+                return None
 
+            if asset_name is not None:
+                rendered_asset_name = asset_name.format(version=remote_version_str)
+                if not release_has_asset(payload, rendered_asset_name):
+                    return None
+            elif asset_filters is not None:
+                rendered_asset_filters = {
+                    key: value.format(version=remote_version_str)
+                    for key, value in asset_filters.items()
+                }
+                if not release_has_asset_matching(payload, rendered_asset_filters):
+                    return None
+
+            return remote_version_str
         except requests.RequestException:
-            return False
+            return None
     else:
+        return None
+
+
+def get_latest_release_payload(repo: str) -> dict[str, Any]:
+    try:
+        response = requests.get(
+            f"https://api.github.com/repos/fit-project/{repo}/releases/latest",
+            timeout=10,
+        )
+        response.raise_for_status()
+        payload = response.json()
+    except requests.RequestException:
+        return {}
+    if not isinstance(payload, dict):
+        return {}
+    return payload
+
+
+def release_has_asset(payload: dict[str, Any], asset_name: str) -> bool:
+    assets = payload.get("assets", [])
+    if not isinstance(assets, list):
         return False
+    return any(
+        isinstance(asset, dict) and asset.get("name") == asset_name
+        for asset in assets
+    )
+
+
+def release_has_asset_matching(
+    payload: dict[str, Any],
+    filters: dict[str, str],
+) -> bool:
+    assets = payload.get("assets", [])
+    if not isinstance(assets, list):
+        return False
+
+    contains = [value.lower() for value in filters.get("contains", "").split() if value]
+    suffix = filters.get("suffix", "").lower()
+
+    for asset in assets:
+        if not isinstance(asset, dict):
+            continue
+        asset_name = asset.get("name")
+        if not isinstance(asset_name, str):
+            continue
+        normalized_name = asset_name.lower()
+        if contains and not all(token in normalized_name for token in contains):
+            continue
+        if suffix and not normalized_name.endswith(suffix):
+            continue
+        return True
+    return False
 
 
 def extract_version(tag_name: str) -> str:
