@@ -59,18 +59,6 @@ def test_get_remote_tag_version_contract_uses_github_tags_endpoint(monkeypatch):
 
 
 @pytest.mark.contract
-def test_has_new_release_version_contract_compares_versions_when_frozen(monkeypatch):
-    monkeypatch.setattr(versions.sys, "frozen", True, raising=False)
-    monkeypatch.setattr(versions, "get_local_version", lambda: "1.0.0", raising=False)
-    monkeypatch.setattr(
-        versions.requests,
-        "get",
-        lambda url, timeout: _Resp({"tag_name": "v1.1.0"}),
-    )
-    assert versions.has_new_release_version("fit-common") is True
-
-
-@pytest.mark.contract
 def test_gui_verification_report_open_contract_windows(monkeypatch, tmp_path):
     startfile_calls = []
     subprocess_calls = []

@@ -28,11 +28,6 @@ def test_get_version_reads_pyproject(tmp_path):
     assert value == "9.9.9"
 
 
-def test_extract_version_returns_semver_or_empty():
-    assert versions.extract_version("v1.2.3-beta") == "1.2.3"
-    assert versions.extract_version("no-version") == ""
-
-
 def test_get_remote_tag_version(monkeypatch):
     monkeypatch.setattr(
         versions.requests,
@@ -42,27 +37,18 @@ def test_get_remote_tag_version(monkeypatch):
     assert versions.get_remote_tag_version("fit-common") == "v2.0.0"
 
 
-def test_has_new_release_version_returns_false_when_not_frozen(monkeypatch):
-    monkeypatch.setattr(versions.sys, "frozen", False, raising=False)
-    assert versions.has_new_release_version("fit-common") is False
-
-
-def test_has_new_release_version_frozen_true_when_remote_is_newer(monkeypatch):
-    monkeypatch.setattr(versions.sys, "frozen", True, raising=False)
-    monkeypatch.setattr(versions, "get_local_version", lambda: "1.0.0", raising=False)
+def test_get_latest_release_payload_returns_payload(monkeypatch):
     monkeypatch.setattr(
         versions.requests,
         "get",
         lambda url, timeout: _Resp({"tag_name": "v1.1.0"}),
     )
-    assert versions.has_new_release_version("fit-common") is True
+    assert versions.get_latest_release_payload("fit-common") == {"tag_name": "v1.1.0"}
 
 
-def test_has_new_release_version_handles_request_exception(monkeypatch):
-    monkeypatch.setattr(versions.sys, "frozen", True, raising=False)
-
+def test_get_latest_release_payload_handles_request_exception(monkeypatch):
     def _boom(*args, **kwargs):
         raise versions.requests.RequestException("network")
 
     monkeypatch.setattr(versions.requests, "get", _boom)
-    assert versions.has_new_release_version("fit-common") is False
+    assert versions.get_latest_release_payload("fit-common") == {}

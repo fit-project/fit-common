@@ -44,7 +44,6 @@ try:
     from .versions import (
         get_remote_tag_version,
         get_version,
-        has_new_release_version,
     )
 except ImportError:
     # Optional if those files are not available yet during early development
@@ -82,5 +81,4 @@ __all__ = [
     # version
     "get_version",
     "get_remote_tag_version",
-    "has_new_release_version",
 ]

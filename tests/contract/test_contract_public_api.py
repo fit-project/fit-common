@@ -30,7 +30,6 @@ def test_core_public_api_symbols_are_available():
         "set_gui_crash_handler",
         "get_version",
         "get_remote_tag_version",
-        "has_new_release_version",
     }
 
     missing = [name for name in required if not hasattr(core, name)]
@@ -47,6 +46,5 @@ def test_core_all_contains_stable_subset():
         "AcquisitionType",
         "get_version",
         "get_remote_tag_version",
-        "has_new_release_version",
     }
     assert stable_subset.issubset(set(core.__all__))

@@ -96,8 +96,7 @@ Note: `pip-audit` may print a skip message for `fit-common` because it is a loca
 ```python
 from fit_common.core.utils.versions import (
     get_local_version,
-    get_remote_tag_version,
-    has_new_release_version
+    get_remote_tag_version
 )
 
 print("Local version:", get_local_version())
