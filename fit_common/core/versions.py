@@ -15,6 +15,8 @@ from typing import Any
 
 import requests
 
+from fit_common.core.paths import resolve_path
+
 
 def find_pyproject(start_path: Path) -> Path | None:
     current = start_path.resolve()
@@ -27,15 +29,11 @@ def find_pyproject(start_path: Path) -> Path | None:
 
 def get_version_from_bundle() -> str | None:
     try:
-        main_module = sys.modules["__main__"]
-        main_file = getattr(main_module, "__file__", None)
-        if not isinstance(main_file, str):
-            return None
-        main_path = Path(main_file).resolve()
-        version_path = main_path.parent / "_version.py"
-
-        if version_path.exists():
-            spec = importlib.util.spec_from_file_location("_version", version_path)
+        resolved_version_path = Path(resolve_path("_version.py"))
+        if resolved_version_path.exists():
+            spec = importlib.util.spec_from_file_location(
+                "_version", resolved_version_path
+            )
             if spec is None or spec.loader is None:
                 return None
             version_mod = importlib.util.module_from_spec(spec)
